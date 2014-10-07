@@ -1,0 +1,468 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		60A9815E19E3F36700020497 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9815D19E3F36700020497 /* main.m */; };
+		60A9816119E3F36700020497 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9816019E3F36700020497 /* AppDelegate.m */; };
+		60A9816419E3F36700020497 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9816319E3F36700020497 /* ViewController.m */; };
+		60A9816719E3F36700020497 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A9816519E3F36700020497 /* Main.storyboard */; };
+		60A9816919E3F36700020497 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60A9816819E3F36700020497 /* Images.xcassets */; };
+		60A9816C19E3F36700020497 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60A9816A19E3F36700020497 /* LaunchScreen.xib */; };
+		60A9817819E3F36700020497 /* BJScrollableLineGraph_DemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9817719E3F36700020497 /* BJScrollableLineGraph_DemoTests.m */; };
+		60A9818419E3F3AD00020497 /* BJScrollableLineGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9818319E3F3AD00020497 /* BJScrollableLineGraphView.m */; };
+		60A9818C19E3F47E00020497 /* BEMCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9818719E3F47E00020497 /* BEMCircle.m */; };
+		60A9818D19E3F47E00020497 /* BEMLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9818919E3F47E00020497 /* BEMLine.m */; };
+		60A9818E19E3F47E00020497 /* BEMSimpleLineGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A9818B19E3F47E00020497 /* BEMSimpleLineGraphView.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		60A9817219E3F36700020497 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 60A9815019E3F36700020497 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 60A9815719E3F36700020497;
+			remoteInfo = "BJScrollableLineGraph Demo";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		60A9815819E3F36700020497 /* BJScrollableLineGraph Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BJScrollableLineGraph Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A9815C19E3F36700020497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		60A9815D19E3F36700020497 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		60A9815F19E3F36700020497 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		60A9816019E3F36700020497 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		60A9816219E3F36700020497 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		60A9816319E3F36700020497 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		60A9816619E3F36700020497 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		60A9816819E3F36700020497 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		60A9816B19E3F36700020497 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		60A9817119E3F36700020497 /* BJScrollableLineGraph DemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BJScrollableLineGraph DemoTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A9817619E3F36700020497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		60A9817719E3F36700020497 /* BJScrollableLineGraph_DemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BJScrollableLineGraph_DemoTests.m; sourceTree = "<group>"; };
+		60A9818219E3F3AD00020497 /* BJScrollableLineGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BJScrollableLineGraphView.h; path = ../../../Classes/BJScrollableLineGraphView.h; sourceTree = "<group>"; };
+		60A9818319E3F3AD00020497 /* BJScrollableLineGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BJScrollableLineGraphView.m; path = ../../../Classes/BJScrollableLineGraphView.m; sourceTree = "<group>"; };
+		60A9818619E3F47E00020497 /* BEMCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BEMCircle.h; path = ../../Classes/BEMCircle.h; sourceTree = "<group>"; };
+		60A9818719E3F47E00020497 /* BEMCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BEMCircle.m; path = ../../Classes/BEMCircle.m; sourceTree = "<group>"; };
+		60A9818819E3F47E00020497 /* BEMLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BEMLine.h; path = ../../Classes/BEMLine.h; sourceTree = "<group>"; };
+		60A9818919E3F47E00020497 /* BEMLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BEMLine.m; path = ../../Classes/BEMLine.m; sourceTree = "<group>"; };
+		60A9818A19E3F47E00020497 /* BEMSimpleLineGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BEMSimpleLineGraphView.h; path = ../../Classes/BEMSimpleLineGraphView.h; sourceTree = "<group>"; };
+		60A9818B19E3F47E00020497 /* BEMSimpleLineGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BEMSimpleLineGraphView.m; path = ../../Classes/BEMSimpleLineGraphView.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		60A9815519E3F36700020497 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60A9816E19E3F36700020497 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		60A9814F19E3F36700020497 = {
+			isa = PBXGroup;
+			children = (
+				60A9815A19E3F36700020497 /* BJScrollableLineGraph Demo */,
+				60A9817419E3F36700020497 /* BJScrollableLineGraph DemoTests */,
+				60A9815919E3F36700020497 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		60A9815919E3F36700020497 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				60A9815819E3F36700020497 /* BJScrollableLineGraph Demo.app */,
+				60A9817119E3F36700020497 /* BJScrollableLineGraph DemoTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		60A9815A19E3F36700020497 /* BJScrollableLineGraph Demo */ = {
+			isa = PBXGroup;
+			children = (
+				60A9818519E3F41100020497 /* Library */,
+				60A9818119E3F39500020497 /* Views */,
+				60A9815F19E3F36700020497 /* AppDelegate.h */,
+				60A9816019E3F36700020497 /* AppDelegate.m */,
+				60A9816219E3F36700020497 /* ViewController.h */,
+				60A9816319E3F36700020497 /* ViewController.m */,
+				60A9816519E3F36700020497 /* Main.storyboard */,
+				60A9816819E3F36700020497 /* Images.xcassets */,
+				60A9816A19E3F36700020497 /* LaunchScreen.xib */,
+				60A9815B19E3F36700020497 /* Supporting Files */,
+			);
+			path = "BJScrollableLineGraph Demo";
+			sourceTree = "<group>";
+		};
+		60A9815B19E3F36700020497 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				60A9815C19E3F36700020497 /* Info.plist */,
+				60A9815D19E3F36700020497 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		60A9817419E3F36700020497 /* BJScrollableLineGraph DemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				60A9817719E3F36700020497 /* BJScrollableLineGraph_DemoTests.m */,
+				60A9817519E3F36700020497 /* Supporting Files */,
+			);
+			path = "BJScrollableLineGraph DemoTests";
+			sourceTree = "<group>";
+		};
+		60A9817519E3F36700020497 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				60A9817619E3F36700020497 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		60A9818119E3F39500020497 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				60A9818219E3F3AD00020497 /* BJScrollableLineGraphView.h */,
+				60A9818319E3F3AD00020497 /* BJScrollableLineGraphView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		60A9818519E3F41100020497 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				60A9818619E3F47E00020497 /* BEMCircle.h */,
+				60A9818719E3F47E00020497 /* BEMCircle.m */,
+				60A9818819E3F47E00020497 /* BEMLine.h */,
+				60A9818919E3F47E00020497 /* BEMLine.m */,
+				60A9818A19E3F47E00020497 /* BEMSimpleLineGraphView.h */,
+				60A9818B19E3F47E00020497 /* BEMSimpleLineGraphView.m */,
+			);
+			name = Library;
+			path = ..;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		60A9815719E3F36700020497 /* BJScrollableLineGraph Demo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 60A9817B19E3F36700020497 /* Build configuration list for PBXNativeTarget "BJScrollableLineGraph Demo" */;
+			buildPhases = (
+				60A9815419E3F36700020497 /* Sources */,
+				60A9815519E3F36700020497 /* Frameworks */,
+				60A9815619E3F36700020497 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "BJScrollableLineGraph Demo";
+			productName = "BJScrollableLineGraph Demo";
+			productReference = 60A9815819E3F36700020497 /* BJScrollableLineGraph Demo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		60A9817019E3F36700020497 /* BJScrollableLineGraph DemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 60A9817E19E3F36700020497 /* Build configuration list for PBXNativeTarget "BJScrollableLineGraph DemoTests" */;
+			buildPhases = (
+				60A9816D19E3F36700020497 /* Sources */,
+				60A9816E19E3F36700020497 /* Frameworks */,
+				60A9816F19E3F36700020497 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				60A9817319E3F36700020497 /* PBXTargetDependency */,
+			);
+			name = "BJScrollableLineGraph DemoTests";
+			productName = "BJScrollableLineGraph DemoTests";
+			productReference = 60A9817119E3F36700020497 /* BJScrollableLineGraph DemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		60A9815019E3F36700020497 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "BenJ Lei";
+				TargetAttributes = {
+					60A9815719E3F36700020497 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+					60A9817019E3F36700020497 = {
+						CreatedOnToolsVersion = 6.0.1;
+						TestTargetID = 60A9815719E3F36700020497;
+					};
+				};
+			};
+			buildConfigurationList = 60A9815319E3F36700020497 /* Build configuration list for PBXProject "BJScrollableLineGraph Demo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 60A9814F19E3F36700020497;
+			productRefGroup = 60A9815919E3F36700020497 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				60A9815719E3F36700020497 /* BJScrollableLineGraph Demo */,
+				60A9817019E3F36700020497 /* BJScrollableLineGraph DemoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		60A9815619E3F36700020497 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60A9816719E3F36700020497 /* Main.storyboard in Resources */,
+				60A9816C19E3F36700020497 /* LaunchScreen.xib in Resources */,
+				60A9816919E3F36700020497 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60A9816F19E3F36700020497 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		60A9815419E3F36700020497 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60A9818E19E3F47E00020497 /* BEMSimpleLineGraphView.m in Sources */,
+				60A9818C19E3F47E00020497 /* BEMCircle.m in Sources */,
+				60A9816419E3F36700020497 /* ViewController.m in Sources */,
+				60A9818D19E3F47E00020497 /* BEMLine.m in Sources */,
+				60A9816119E3F36700020497 /* AppDelegate.m in Sources */,
+				60A9818419E3F3AD00020497 /* BJScrollableLineGraphView.m in Sources */,
+				60A9815E19E3F36700020497 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60A9816D19E3F36700020497 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60A9817819E3F36700020497 /* BJScrollableLineGraph_DemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		60A9817319E3F36700020497 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 60A9815719E3F36700020497 /* BJScrollableLineGraph Demo */;
+			targetProxy = 60A9817219E3F36700020497 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		60A9816519E3F36700020497 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				60A9816619E3F36700020497 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		60A9816A19E3F36700020497 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				60A9816B19E3F36700020497 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		60A9817919E3F36700020497 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		60A9817A19E3F36700020497 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		60A9817C19E3F36700020497 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "BJScrollableLineGraph Demo/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		60A9817D19E3F36700020497 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "BJScrollableLineGraph Demo/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		60A9817F19E3F36700020497 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "BJScrollableLineGraph DemoTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BJScrollableLineGraph Demo.app/BJScrollableLineGraph Demo";
+			};
+			name = Debug;
+		};
+		60A9818019E3F36700020497 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "BJScrollableLineGraph DemoTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BJScrollableLineGraph Demo.app/BJScrollableLineGraph Demo";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		60A9815319E3F36700020497 /* Build configuration list for PBXProject "BJScrollableLineGraph Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60A9817919E3F36700020497 /* Debug */,
+				60A9817A19E3F36700020497 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		60A9817B19E3F36700020497 /* Build configuration list for PBXNativeTarget "BJScrollableLineGraph Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60A9817C19E3F36700020497 /* Debug */,
+				60A9817D19E3F36700020497 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		60A9817E19E3F36700020497 /* Build configuration list for PBXNativeTarget "BJScrollableLineGraph DemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60A9817F19E3F36700020497 /* Debug */,
+				60A9818019E3F36700020497 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 60A9815019E3F36700020497 /* Project object */;
+}
