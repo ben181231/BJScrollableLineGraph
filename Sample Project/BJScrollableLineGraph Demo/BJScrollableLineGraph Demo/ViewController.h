@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BJScrollableLineGraphView.h"
 
 @interface ViewController : UIViewController
+    <BJScrollableLineGraphViewDataSource, BJScrollableLineGraphViewDelegate>
 
 
 @end
