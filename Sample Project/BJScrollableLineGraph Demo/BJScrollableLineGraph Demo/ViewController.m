@@ -41,6 +41,19 @@
                                                             alpha:1.0f]];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    [self.scrollableLineGraph setReferenceAtIndex:0];
+
+    for (NSUInteger idx = 1; idx <= 10; idx++) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(idx * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.scrollableLineGraph setReferenceAtIndex:idx * 3];
+        });
+    }
+}
+
 - (NSArray *)privateData
 {
     if(!_privateData){

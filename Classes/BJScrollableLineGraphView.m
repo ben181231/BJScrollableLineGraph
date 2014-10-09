@@ -25,11 +25,16 @@
 
 @interface BJScrollableLineGraphView()
     <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
+{
+    CAShapeLayer *_horizontalReferenceLayer;
+    CAShapeLayer *_verticalReferenceLayer;
+}
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) BEMSimpleLineGraphView *graphView;
 @property (strong, nonatomic) UIView *xAxisView;
 @property (strong, nonatomic) UIView *yAxisView;
+@property (strong, nonatomic) UIView *referenceCircleView;
 
 @property (strong, nonatomic) NSLayoutConstraint *graphViewWidthConstraint;
 
@@ -39,6 +44,8 @@
 @property (nonatomic, readonly) CGFloat graphTopPadding;
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
+
+@property (nonatomic, assign) NSUInteger referencingIndex;
 
 @end
 
@@ -69,11 +76,19 @@
     // -- Setup X Axis View
     [self setXAxisView:[self createXAxisView]];
 
+    // -- Setup Referencing Views
+    _referencingIndex = NSNotFound;
+    [self setReferenceCircleView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 9, 9)]];
+    [self.referenceCircleView setBackgroundColor:self.graphColor];
+    [self.referenceCircleView.layer setCornerRadius:4.5f];
+    [self.referenceCircleView setAlpha:0.0f];
+
     // -- Add subviews --
     [self addSubview:self.scrollView];
     [self addSubview:self.yAxisView];
     [self.scrollView addSubview:self.xAxisView];
     [self.scrollView addSubview:self.graphView];
+    [self.scrollView addSubview:self.referenceCircleView];
 
     // -- Add layout constraints --
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -140,14 +155,14 @@
                                       constant:self.graphYAxisWidth]
         ]];
 
-    self.graphViewWidthConstraint =
+    [self setGraphViewWidthConstraint:
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeWidth
                                      relatedBy:NSLayoutRelationEqual
                                         toItem:nil
                                      attribute:NSLayoutAttributeNotAnAttribute
                                     multiplier:1.0f
-                                      constant:self.frame.size.width];
+                                      constant:self.frame.size.width]];
     if(self.dataSource){
         [self.graphViewWidthConstraint
              setConstant:([self.dataSource numberOfPointsInScrollableLineGraph:self] *
@@ -231,6 +246,7 @@
         [self.graphView setColorLine:graphColor];
         [self.graphView reloadGraph];
     }
+    [self.referenceCircleView setBackgroundColor:graphColor];
 }
 
 - (UIColor *)graphColor
@@ -314,6 +330,10 @@
 
     if(self.xAxisView){
         [self reloadXAxisView:self.xAxisView];
+    }
+
+    if (self.referencingIndex != NSNotFound) {
+        [self setReferenceAtIndex:self.referencingIndex];
     }
 }
 
@@ -737,6 +757,74 @@
                                 ]];
 }
 
+- (void)setReferenceAtIndex:(NSUInteger)index
+{
+    if (index == NSNotFound) {
+        [self removeReference];
+        return;
+    }
+
+    if (!_horizontalReferenceLayer) {
+        _horizontalReferenceLayer = [CAShapeLayer layer];
+        [_horizontalReferenceLayer setBounds:self.scrollView.bounds];
+        [_horizontalReferenceLayer setPosition:self.scrollView.center];
+        [_horizontalReferenceLayer setStrokeColor:[UIColor blackColor].CGColor];
+        [_horizontalReferenceLayer setFillColor:nil];
+        [_horizontalReferenceLayer setLineDashPattern:@[@3, @3]];
+    }
+    if (!_verticalReferenceLayer) {
+        _verticalReferenceLayer = [CAShapeLayer layer];
+        [_verticalReferenceLayer setBounds:self.scrollView.bounds];
+        [_verticalReferenceLayer setPosition:self.scrollView.center];
+        [_verticalReferenceLayer setStrokeColor:[UIColor blackColor].CGColor];
+        [_verticalReferenceLayer setFillColor:nil];
+        [_verticalReferenceLayer setLineDashPattern:@[@3, @3]];
+    }
+
+    [_horizontalReferenceLayer removeFromSuperlayer];
+    [_verticalReferenceLayer removeFromSuperlayer];
+
+    _referencingIndex = index;
+
+    CGFloat value = [self.dataSource scrollableLineGraph:self valueForPointAtIndex:index];
+    CGFloat topOffset = self.scrollView.frame.size.height - [self bottomOffsetForValue:value];
+    CGFloat leftOffset = self.graphWidthPerDataRecord * index +
+                         self.graphYAxisWidth +
+                         self.graphHorizontalPadding;
+
+    CGMutablePathRef horizontalPath = CGPathCreateMutable();
+    CGPathMoveToPoint(horizontalPath, NULL, leftOffset, topOffset);
+    CGPathAddLineToPoint(horizontalPath, NULL, 0, topOffset);
+
+    [_horizontalReferenceLayer setPath:horizontalPath];
+
+    CGMutablePathRef verticalPath = CGPathCreateMutable();
+    CGPathMoveToPoint(verticalPath, NULL, leftOffset, topOffset);
+    CGPathAddLineToPoint(verticalPath, NULL, leftOffset,
+                         self.scrollView.frame.size.height - self.graphXAxisHeight);
+
+    [_verticalReferenceLayer setPath:verticalPath];
+
+    CGPathRelease(horizontalPath);
+    CGPathRelease(verticalPath);
+
+    [self.scrollView.layer insertSublayer:_horizontalReferenceLayer atIndex:0];
+    [self.scrollView.layer insertSublayer:_verticalReferenceLayer atIndex:0];
+
+    [self.referenceCircleView setCenter:CGPointMake(leftOffset, topOffset)];
+    [self.referenceCircleView setAlpha:1.0f];
+}
+
+- (void)removeReference
+{
+    //TODO: remove Reference
+    _referencingIndex = NSNotFound;
+    [_horizontalReferenceLayer removeFromSuperlayer];
+    [_verticalReferenceLayer removeFromSuperlayer];
+    [self.referenceCircleView setAlpha:0.0f];
+}
+
+
 #pragma mark - BEMSimpleLineGraphDataSource
 
 - (NSInteger)numberOfPointsInLineGraph:(BEMSimpleLineGraphView *)graph
@@ -785,10 +873,6 @@
     {
         [self.delegate scrollableLineGraphDidFinishLoading:self];
     }
-
-    NSLog(@"[DEBUG] Finish loading line graph within [%.1f ~ %.1f]",
-          [self maxValueForLineGraph:self.graphView],
-          [self minValueForLineGraph:self.graphView]);
 }
 
 @end

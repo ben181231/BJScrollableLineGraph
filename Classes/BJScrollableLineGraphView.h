@@ -52,5 +52,8 @@
 @property (nonatomic, assign) IBOutlet id <BJScrollableLineGraphViewDelegate> delegate;
 
 - (void)reloadGraph;
+- (CGFloat)bottomOffsetForValue:(CGFloat)value;
+- (void)setReferenceAtIndex:(NSUInteger)index;
+- (void)removeReference;
 
 @end
