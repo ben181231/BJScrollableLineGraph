@@ -26,12 +26,28 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="3cX-rV-Ic6"/>
                                 </connections>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jTR-JS-BKr">
+                                <rect key="frame" x="266" y="548" width="69" height="32"/>
+                                <color key="backgroundColor" red="1" green="0.80000000000000004" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="69" id="3Uh-JF-LnX"/>
+                                    <constraint firstAttribute="height" constant="32" id="x0d-oN-gqc"/>
+                                </constraints>
+                                <state key="normal" title="Refresh">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="refreshButtonDidTap:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Xqe-wH-JLP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="4Rn-YX-h77" secondAttribute="trailing" id="2Yy-a8-vCw"/>
                             <constraint firstItem="4Rn-YX-h77" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="IbK-LR-ckY"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="jTR-JS-BKr" secondAttribute="bottom" constant="20" id="PpV-IA-Xgm"/>
                             <constraint firstItem="4Rn-YX-h77" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="Uqw-va-7Dx"/>
+                            <constraint firstAttribute="centerX" secondItem="jTR-JS-BKr" secondAttribute="centerX" id="dn6-5J-PhV"/>
                             <constraint firstItem="4Rn-YX-h77" firstAttribute="height" secondItem="kh9-bI-dsS" secondAttribute="height" multiplier="0.5" id="nmk-4Z-ZyH"/>
                         </constraints>
                     </view>

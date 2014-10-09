@@ -40,12 +40,13 @@
 {
     if(!_privateData){
         NSMutableArray *privateDataMutable =
-        [[NSMutableArray alloc] initWithCapacity:MAX_DATA_COUNT];
+            [[NSMutableArray alloc] initWithCapacity:MAX_DATA_COUNT];
         [privateDataMutable addObject:@([self randomInt])];
         for (int idx = 1; idx < MAX_DATA_COUNT; idx++) {
             NSInteger perData = [self randomIntFromInt:[privateDataMutable[idx-1] integerValue]];
             [privateDataMutable addObject:@(perData)];
         }
+
         _privateData = privateDataMutable;
     }
 
@@ -86,6 +87,15 @@
     return theInteger + (arc4random() % (AVAILABLE_STEP_CHANGE * 2)) - AVAILABLE_STEP_CHANGE;
 }
 
+- (IBAction)refreshButtonDidTap:(UIButton *)button
+{
+    [self setPrivateData:nil];
+    [self setGraphDataArray:nil];
+    if(self.scrollableLineGraph){
+        [self.scrollableLineGraph reloadGraph];
+    }
+}
+
 #pragma mark - BJScrollableLineGraphViewDataSource
 
 - (NSInteger)numberOfPointsInScrollableLineGraph:(BJScrollableLineGraphView *)graph
@@ -105,8 +115,12 @@
     NSRange wholeStringRange = NSMakeRange(0, [valueString length]);
     NSMutableAttributedString *resultStringMutable =
         [[NSMutableAttributedString alloc] initWithString:valueString];
+
     [resultStringMutable addAttribute:NSFontAttributeName
                                 value:[UIFont fontWithName:@"GillSans" size:10.0f]
+                                range:wholeStringRange];
+    [resultStringMutable addAttribute:NSForegroundColorAttributeName
+                                value:[UIColor darkGrayColor]
                                 range:wholeStringRange];
 
     return resultStringMutable;
@@ -115,12 +129,19 @@
 #pragma mark - BJScrollableLineGraphViewDelegate
 - (CGFloat)maxValueForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
-    return [[self.privateData valueForKeyPath:@"@max.intValue"] floatValue] + 20.0f;
+    CGFloat maxValue = [[self.privateData valueForKeyPath:@"@max.intValue"] floatValue];
+    return maxValue > 0 ? 1.2f * maxValue : 0.8f * maxValue;
 }
 
 - (CGFloat)minValueForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
-    return [[self.privateData valueForKeyPath:@"@min.intValue"] floatValue];
+    CGFloat minValue = [[self.privateData valueForKeyPath:@"@min.intValue"] floatValue];
+    return  minValue > 0 ? 0.8f * minValue : 1.2f * minValue;
+}
+
+- (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return [UIColor darkGrayColor];
 }
 
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph

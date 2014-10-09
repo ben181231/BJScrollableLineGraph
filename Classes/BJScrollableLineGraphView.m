@@ -19,7 +19,7 @@
 #define DEFAULT_GRAPH_MIN_VALUE (-1000.f)
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
 #define DEFAULT_GRAPH_Y_AXIS_WIDTH (48.0f)
-#define DEFAULT_GRAPH_PADDING (0.0f)
+#define DEFAULT_GRAPH_HORIZONTAL_PADDING (50.0f)
 
 @interface BJScrollableLineGraphView()
     <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
@@ -32,6 +32,7 @@
 
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
+@property (nonatomic, readonly) CGFloat graphHorizontalPadding;
 
 @end
 
@@ -162,14 +163,14 @@
                                         toItem:self.scrollView
                                      attribute:NSLayoutAttributeLeading
                                     multiplier:1.0f
-                                      constant:self.graphYAxisWidth],
+                                      constant:self.graphYAxisWidth + self.graphHorizontalPadding],
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeTrailing
                                      relatedBy:NSLayoutRelationEqual
                                         toItem:self.scrollView
                                      attribute:NSLayoutAttributeTrailing
                                     multiplier:1.0f
-                                      constant:0.0f],
+                                      constant:-self.graphHorizontalPadding],
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeHeight
                                      relatedBy:NSLayoutRelationEqual
@@ -263,6 +264,10 @@
         [self.graphView reloadGraph];
     }
 
+    if(self.yAxisView){
+        [self reloadYAxisView:self.yAxisView];
+    }
+
     //TODO: reload x-axis and y-axis
 }
 
@@ -285,6 +290,15 @@
     else return DEFAULT_GRAPH_Y_AXIS_WIDTH;
 }
 
+- (CGFloat)graphHorizontalPadding
+{
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(horizontalPaddingForScrollableLineGraph:)]){
+        return [self.delegate horizontalPaddingForScrollableLineGraph:self];
+    }
+    else return DEFAULT_GRAPH_HORIZONTAL_PADDING;
+}
+
 - (CGFloat)bottomOffsetForValue:(CGFloat)value
 {
     if(self.graphView){
@@ -296,10 +310,9 @@
             return graphHeight / 2.0f + self.graphXAxisHeight;
         }
 
-        CGFloat padding = [self staticPaddingForLineGraph:self.graphView];
-        CGFloat positionOnYAxis = ((graphHeight - padding/2) -
+        CGFloat positionOnYAxis = (graphHeight -
                                    ((value - minValue) /
-                                    ((maxValue - minValue) / (graphHeight - padding))));
+                                    ((maxValue - minValue) / graphHeight)));
 
         return graphHeight - positionOnYAxis + self.graphXAxisHeight;
     }
@@ -328,11 +341,33 @@
     return graphView;
 }
 
+
+
 - (UIView *)createYAxisView
 {
-    //TODO: create y axis view
     UIView *yAxisView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 1000)];
+    [self reloadYAxisView:yAxisView];
+
+    return yAxisView;
+
+}
+
+- (void)reloadYAxisView:(UIView *)yAxisView
+{
+    if(yAxisView.subviews && [yAxisView.subviews count] > 0){
+        for (UIView *perSubView in yAxisView.subviews) {
+            [perSubView removeFromSuperview];
+        }
+    }
+
     [yAxisView setBackgroundColor:self.graphBackgroundColor];
+
+    UIColor *indicatorColor = [UIColor blackColor];
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(yAxisIndicatorColorForScrollableLineGraph:)])
+    {
+        indicatorColor = [self.delegate yAxisIndicatorColorForScrollableLineGraph:self];
+    }
 
     CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
     CGFloat minValue = [self minValueForLineGraph:self.graphView];
@@ -347,7 +382,7 @@
         [perRefView setAlpha:0.0f];
 
         UIView *perIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 1)];
-        [perIndicatorView setBackgroundColor:[UIColor blackColor]];
+        [perIndicatorView setBackgroundColor:indicatorColor];
 
         [yAxisView addSubview:perRefView];
         [yAxisView addSubview:perIndicatorView];
@@ -466,8 +501,6 @@
                                           constant:0.0f]
             ]];
     }
-
-    return yAxisView;
 }
 
 #pragma mark - BEMSimpleLineGraphDataSource
@@ -508,7 +541,7 @@
 
 - (CGFloat)staticPaddingForLineGraph:(BEMSimpleLineGraphView *)graph
 {
-    return DEFAULT_GRAPH_PADDING;
+    return 0.0f;
 }
 
 - (void)lineGraphDidFinishLoading:(BEMSimpleLineGraphView *)graph

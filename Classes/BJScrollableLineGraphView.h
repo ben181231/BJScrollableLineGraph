@@ -27,6 +27,8 @@
 @optional
 - (CGFloat)xAxisHeightForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (CGFloat)horizontalPaddingForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 
 @end
