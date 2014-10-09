@@ -17,6 +17,7 @@
 #define DEFAULT_GRAPH_WIDTH_PER_DATA (30.0f)
 #define DEFAULT_GRAPH_MAX_VALUE (1000.0f)
 #define DEFAULT_GRAPH_MIN_VALUE (-1000.f)
+#define DEFAULT_GRAPH_X_LABEL_GAP (1)
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
 #define DEFAULT_GRAPH_Y_AXIS_WIDTH (48.0f)
 #define DEFAULT_GRAPH_HORIZONTAL_PADDING (50.0f)
@@ -26,6 +27,7 @@
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) BEMSimpleLineGraphView *graphView;
+@property (strong, nonatomic) UIView *xAxisView;
 @property (strong, nonatomic) UIView *yAxisView;
 
 @property (strong, nonatomic) NSLayoutConstraint *graphViewWidthConstraint;
@@ -33,6 +35,7 @@
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
 @property (nonatomic, readonly) CGFloat graphHorizontalPadding;
+@property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
 
 @end
 
@@ -60,15 +63,20 @@
     // -- Setup Y Axis View
     [self setYAxisView:[self createYAxisView]];
 
+    // -- Setup X Axis View
+    [self setXAxisView:[self createXAxisView]];
+
     // -- Add subviews --
     [self addSubview:self.scrollView];
     [self addSubview:self.yAxisView];
+    [self.scrollView addSubview:self.xAxisView];
     [self.scrollView addSubview:self.graphView];
 
     // -- Add layout constraints --
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.graphView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.yAxisView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.xAxisView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self addConstraints:@[
         [NSLayoutConstraint constraintWithItem:self.scrollView
                                      attribute:NSLayoutAttributeTop
@@ -178,7 +186,36 @@
                                      attribute:NSLayoutAttributeHeight
                                     multiplier:1.0f
                                       constant:-(self.graphXAxisHeight)],
-        self.graphViewWidthConstraint
+        self.graphViewWidthConstraint,
+
+        [NSLayoutConstraint constraintWithItem:self.xAxisView
+                                     attribute:NSLayoutAttributeTop
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self.graphView
+                                     attribute:NSLayoutAttributeBottom
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:self.xAxisView
+                                     attribute:NSLayoutAttributeHeight
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1.0f
+                                      constant:self.graphXAxisHeight],
+        [NSLayoutConstraint constraintWithItem:self.xAxisView
+                                     attribute:NSLayoutAttributeLeading
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self.graphView
+                                     attribute:NSLayoutAttributeLeading
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:self.xAxisView
+                                     attribute:NSLayoutAttributeTrailing
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self.graphView
+                                     attribute:NSLayoutAttributeTrailing
+                                    multiplier:1.0f
+                                      constant:0.0f]
         ]];
 }
 
@@ -243,9 +280,10 @@
     _graphWidthPerDataRecord = graphWidthPerDataRecord;
     if(self.graphView && self.dataSource){
         [self.graphViewWidthConstraint
-         setConstant:([self.dataSource numberOfPointsInScrollableLineGraph:self] *
-                      graphWidthPerDataRecord)];
+             setConstant:([self.dataSource numberOfPointsInScrollableLineGraph:self] *
+                          graphWidthPerDataRecord)];
         [self.graphView reloadGraph];
+        [self reloadXAxisView:self.xAxisView];
     }
 }
 
@@ -268,7 +306,9 @@
         [self reloadYAxisView:self.yAxisView];
     }
 
-    //TODO: reload x-axis and y-axis
+    if(self.xAxisView){
+        [self reloadXAxisView:self.xAxisView];
+    }
 }
 
 - (CGFloat)graphXAxisHeight
@@ -297,6 +337,15 @@
         return [self.delegate horizontalPaddingForScrollableLineGraph:self];
     }
     else return DEFAULT_GRAPH_HORIZONTAL_PADDING;
+}
+
+- (NSUInteger)graphXAxisLabelGap
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(xAxisLabelGapForScrollableLableLineGraph:)]) {
+        return [self.delegate xAxisLabelGapForScrollableLableLineGraph:self];
+    }
+    else return DEFAULT_GRAPH_X_LABEL_GAP;
 }
 
 - (CGFloat)bottomOffsetForValue:(CGFloat)value
@@ -341,8 +390,6 @@
     return graphView;
 }
 
-
-
 - (UIView *)createYAxisView
 {
     UIView *yAxisView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 1000)];
@@ -374,7 +421,7 @@
     NSUInteger stepCount = 7;  // hard code first
     CGFloat stepValue = (maxValue - minValue) / stepCount;
 
-    for (NSUInteger idx = 0; idx <= stepCount; idx++) {
+    for (NSUInteger idx = 1; idx < stepCount; idx++) {
         CGFloat currentValue = minValue + stepValue * idx;
 
         // create reference view and indicator view
@@ -501,6 +548,165 @@
                                           constant:0.0f]
             ]];
     }
+}
+
+- (UIView *)createXAxisView
+{
+    UIView *xAxisView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1000, 300)];
+    [self reloadXAxisView:xAxisView];
+
+    return xAxisView;
+}
+
+- (void)reloadXAxisView:(UIView *)xAxisView
+{
+    if(xAxisView.subviews && [xAxisView.subviews count] > 0){
+        for (UIView *perSubView in xAxisView.subviews) {
+            [perSubView removeFromSuperview];
+        }
+    }
+
+    [xAxisView setBackgroundColor:self.graphBackgroundColor];
+
+    UIColor *indicatorColor = [UIColor blackColor];
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(xAxisIndicatorColorForScrollableLineGraph:)])
+    {
+        indicatorColor = [self.delegate xAxisIndicatorColorForScrollableLineGraph:self];
+    }
+
+    BOOL isLongIndicator = NO;
+    CGFloat lastOffset = 0.0f;
+    NSUInteger dataRecordCount = [self.dataSource numberOfPointsInScrollableLineGraph:self];
+    for (NSUInteger idx = 0;
+         idx < dataRecordCount + self.graphXAxisLabelGap + 1;   // extend one more label
+         idx += (self.graphXAxisLabelGap + 1)) {
+
+        CGFloat perOffset = idx * self.graphWidthPerDataRecord;
+        lastOffset = perOffset;
+
+        isLongIndicator = !isLongIndicator;
+
+        NSAttributedString *perLabelString = nil;
+        if ([self.dataSource respondsToSelector:@selector(xAxisLabelStringForIndex:)]) {
+            perLabelString = [self.dataSource xAxisLabelStringForIndex:idx];
+        }
+        else{
+            perLabelString = [[NSAttributedString alloc] initWithString:@""];
+        }
+        CGRect perLabelFrame = CGRectMake(0, 0, 100, 100);
+        perLabelFrame.size.width = ceilf(perLabelString.size.width);
+        perLabelFrame.size.height = ceilf(perLabelString.size.height);
+
+        UILabel *perLabel = [[UILabel alloc] initWithFrame:perLabelFrame];
+        [perLabel setAttributedText:perLabelString];
+
+        UIView *perIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 6)];
+        [perIndicatorView setBackgroundColor:indicatorColor];
+
+        [xAxisView addSubview:perLabel];
+        [xAxisView addSubview:perIndicatorView];
+
+        [perLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [perIndicatorView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+        [xAxisView addConstraints:@[
+            [NSLayoutConstraint constraintWithItem:perLabel
+                                         attribute:NSLayoutAttributeTop
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:xAxisView
+                                         attribute:NSLayoutAttributeTop
+                                        multiplier:1.0f
+                                          constant:9.0f],
+            [NSLayoutConstraint constraintWithItem:perLabel
+                                         attribute:NSLayoutAttributeWidth
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:nil
+                                         attribute:NSLayoutAttributeNotAnAttribute
+                                        multiplier:1.0f
+                                          constant:perLabelFrame.size.width],
+            [NSLayoutConstraint constraintWithItem:perLabel
+                                         attribute:NSLayoutAttributeHeight
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:nil
+                                         attribute:NSLayoutAttributeNotAnAttribute
+                                        multiplier:1.0f
+                                          constant:perLabelFrame.size.height],
+            [NSLayoutConstraint constraintWithItem:perLabel
+                                         attribute:NSLayoutAttributeCenterX
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:xAxisView
+                                         attribute:NSLayoutAttributeLeading
+                                        multiplier:1.0f
+                                          constant:perOffset],
+
+            [NSLayoutConstraint constraintWithItem:perIndicatorView
+                                         attribute:NSLayoutAttributeTop
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:xAxisView
+                                         attribute:NSLayoutAttributeTop
+                                        multiplier:1.0f
+                                          constant:0.0f],
+            [NSLayoutConstraint constraintWithItem:perIndicatorView
+                                         attribute:NSLayoutAttributeWidth
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:nil
+                                         attribute:NSLayoutAttributeNotAnAttribute
+                                        multiplier:1.0f
+                                          constant:1.0f],
+            [NSLayoutConstraint constraintWithItem:perIndicatorView
+                                         attribute:NSLayoutAttributeHeight
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:nil
+                                         attribute:NSLayoutAttributeNotAnAttribute
+                                        multiplier:1.0f
+                                          constant:(isLongIndicator ? 6.0f : 3.0f)],
+            [NSLayoutConstraint constraintWithItem:perIndicatorView
+                                         attribute:NSLayoutAttributeCenterX
+                                         relatedBy:NSLayoutRelationEqual
+                                            toItem:xAxisView
+                                         attribute:NSLayoutAttributeLeading
+                                        multiplier:1.0f
+                                          constant:perOffset]
+            ]];
+    }
+
+    UIView *axisLineView = [[UIView alloc] initWithFrame:xAxisView.frame];
+    [axisLineView setBackgroundColor:indicatorColor];
+
+    [xAxisView addSubview:axisLineView];
+    [axisLineView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    [xAxisView addConstraints:@[
+        [NSLayoutConstraint constraintWithItem:axisLineView
+                                     attribute:NSLayoutAttributeTop
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:xAxisView
+                                     attribute:NSLayoutAttributeTop
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:axisLineView
+                                     attribute:NSLayoutAttributeLeading
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:xAxisView
+                                     attribute:NSLayoutAttributeLeading
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:axisLineView
+                                     attribute:NSLayoutAttributeWidth
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1.0f
+                                      constant:lastOffset],
+        [NSLayoutConstraint constraintWithItem:axisLineView
+                                     attribute:NSLayoutAttributeHeight
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1.0f
+                                      constant:1.0f]
+                                ]];
 }
 
 #pragma mark - BEMSimpleLineGraphDataSource

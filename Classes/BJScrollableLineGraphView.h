@@ -17,6 +17,9 @@
           valueForPointAtIndex:(NSInteger)index;
 - (NSAttributedString *)yAxisLabelStringForValue:(CGFloat)value;
 
+@optional
+- (NSAttributedString *)xAxisLabelStringForIndex:(NSUInteger)index;
+
 @end
 
 @protocol BJScrollableLineGraphViewDelegate <NSObject>
@@ -29,6 +32,8 @@
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (CGFloat)horizontalPaddingForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)xAxisLabelGapForScrollableLableLineGraph:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 
 @end

@@ -126,6 +126,23 @@
     return resultStringMutable;
 }
 
+- (NSAttributedString *)xAxisLabelStringForIndex:(NSUInteger)index
+{
+    NSString *valueString = [NSString stringWithFormat:@"%u", (unsigned)index];
+    NSRange wholeStringRange = NSMakeRange(0, [valueString length]);
+    NSMutableAttributedString *resultStringMutable =
+        [[NSMutableAttributedString alloc] initWithString:valueString];
+
+    [resultStringMutable addAttribute:NSFontAttributeName
+                                value:[UIFont fontWithName:@"GillSans" size:10.0f]
+                                range:wholeStringRange];
+    [resultStringMutable addAttribute:NSForegroundColorAttributeName
+                                value:[UIColor darkGrayColor]
+                                range:wholeStringRange];
+
+    return resultStringMutable;
+}
+
 #pragma mark - BJScrollableLineGraphViewDelegate
 - (CGFloat)maxValueForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
@@ -142,6 +159,16 @@
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return [UIColor darkGrayColor];
+}
+
+- (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return [UIColor darkGrayColor];
+}
+
+- (NSUInteger)xAxisLabelGapForScrollableLableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return 4;
 }
 
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph
