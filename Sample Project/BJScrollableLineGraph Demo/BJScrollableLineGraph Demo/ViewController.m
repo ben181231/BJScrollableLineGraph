@@ -34,6 +34,11 @@
     [super viewDidLoad];
 
     [self.scrollableLineGraph setGraphWidthPerDataRecord:10.0f];
+    [self.scrollableLineGraph setGraphBackgroundColor:[UIColor clearColor]];
+    [self.scrollableLineGraph setGraphColor:[UIColor colorWithRed:0.0f
+                                                            green:161.0f/255
+                                                             blue:229.0f/255
+                                                            alpha:1.0f]];
 }
 
 - (NSArray *)privateData
@@ -120,7 +125,7 @@
                                 value:[UIFont fontWithName:@"GillSans" size:10.0f]
                                 range:wholeStringRange];
     [resultStringMutable addAttribute:NSForegroundColorAttributeName
-                                value:[UIColor darkGrayColor]
+                                value:[UIColor colorWithWhite:102.0f/255 alpha:1.0f]
                                 range:wholeStringRange];
 
     return resultStringMutable;
@@ -137,7 +142,7 @@
                                 value:[UIFont fontWithName:@"GillSans" size:10.0f]
                                 range:wholeStringRange];
     [resultStringMutable addAttribute:NSForegroundColorAttributeName
-                                value:[UIColor darkGrayColor]
+                                value:[UIColor whiteColor]
                                 range:wholeStringRange];
 
     return resultStringMutable;
@@ -156,14 +161,19 @@
     return  minValue > 0 ? 0.8f * minValue : 1.2f * minValue;
 }
 
+- (UIColor *)yAxisColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return [UIColor lightGrayColor];
+}
+
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
-    return [UIColor darkGrayColor];
+    return [UIColor colorWithWhite:102.0f/255 alpha:1.0f];
 }
 
 - (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
-    return [UIColor darkGrayColor];
+    return [UIColor whiteColor];
 }
 
 - (NSUInteger)xAxisLabelGapForScrollableLableLineGraph:(BJScrollableLineGraphView *)graph

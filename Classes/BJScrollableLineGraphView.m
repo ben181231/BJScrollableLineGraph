@@ -21,6 +21,7 @@
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
 #define DEFAULT_GRAPH_Y_AXIS_WIDTH (48.0f)
 #define DEFAULT_GRAPH_HORIZONTAL_PADDING (50.0f)
+#define DEFAULT_GRAPH_VERTICAL_PADDING (10.0f)
 
 @interface BJScrollableLineGraphView()
     <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
@@ -35,6 +36,8 @@
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
 @property (nonatomic, readonly) CGFloat graphHorizontalPadding;
+@property (nonatomic, readonly) CGFloat graphTopPadding;
+@property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
 
 @end
@@ -113,14 +116,14 @@
                                         toItem:self
                                      attribute:NSLayoutAttributeTop
                                     multiplier:1.0f
-                                      constant:0.0f],
+                                      constant:self.graphTopPadding],
         [NSLayoutConstraint constraintWithItem:self.yAxisView
                                      attribute:NSLayoutAttributeBottom
                                      relatedBy:NSLayoutRelationEqual
                                         toItem:self
                                      attribute:NSLayoutAttributeBottom
                                     multiplier:1.0f
-                                      constant:-(self.graphXAxisHeight)],
+                                      constant:-(self.graphXAxisHeight + self.graphBottomPadding)],
         [NSLayoutConstraint constraintWithItem:self.yAxisView
                                      attribute:NSLayoutAttributeLeading
                                      relatedBy:NSLayoutRelationEqual
@@ -157,14 +160,14 @@
                                         toItem:self.scrollView
                                      attribute:NSLayoutAttributeTop
                                     multiplier:1.0f
-                                      constant:0.0f],
+                                      constant:self.graphTopPadding],
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeBottom
                                      relatedBy:NSLayoutRelationEqual
                                         toItem:self.scrollView
                                      attribute:NSLayoutAttributeBottom
                                     multiplier:1.0f
-                                      constant:-(self.graphXAxisHeight)],
+                                      constant:-(self.graphXAxisHeight + self.graphBottomPadding)],
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeLeading
                                      relatedBy:NSLayoutRelationEqual
@@ -185,7 +188,9 @@
                                         toItem:self.scrollView
                                      attribute:NSLayoutAttributeHeight
                                     multiplier:1.0f
-                                      constant:-(self.graphXAxisHeight)],
+                                      constant:-(self.graphXAxisHeight +
+                                                 self.graphTopPadding +
+                                                 self.graphBottomPadding)],
         self.graphViewWidthConstraint,
 
         [NSLayoutConstraint constraintWithItem:self.xAxisView
@@ -194,7 +199,7 @@
                                         toItem:self.graphView
                                      attribute:NSLayoutAttributeBottom
                                     multiplier:1.0f
-                                      constant:0.0f],
+                                      constant:self.graphBottomPadding],
         [NSLayoutConstraint constraintWithItem:self.xAxisView
                                      attribute:NSLayoutAttributeHeight
                                      relatedBy:NSLayoutRelationEqual
@@ -244,8 +249,9 @@
         [self.scrollView setBackgroundColor:graphBackgroundColor];
         [self.graphView setColorTop:graphBackgroundColor];
         [self.graphView setColorBottom:graphBackgroundColor];
-        [self.graphView reloadGraph];
     }
+
+    [self reloadGraph];
 }
 
 - (UIColor *)graphBackgroundColor
@@ -339,6 +345,24 @@
     else return DEFAULT_GRAPH_HORIZONTAL_PADDING;
 }
 
+- (CGFloat)graphTopPadding
+{
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(topPaddingForScrollableLineGraph:)]){
+        return [self.delegate horizontalPaddingForScrollableLineGraph:self];
+    }
+    else return DEFAULT_GRAPH_VERTICAL_PADDING;
+}
+
+- (CGFloat)graphBottomPadding
+{
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(bottomPaddingForScrollableLineGraph:)]){
+        return [self.delegate horizontalPaddingForScrollableLineGraph:self];
+    }
+    else return DEFAULT_GRAPH_VERTICAL_PADDING;
+}
+
 - (NSUInteger)graphXAxisLabelGap
 {
     if (self.delegate &&
@@ -359,11 +383,10 @@
             return graphHeight / 2.0f + self.graphXAxisHeight;
         }
 
-        CGFloat positionOnYAxis = (graphHeight -
-                                   ((value - minValue) /
-                                    ((maxValue - minValue) / graphHeight)));
+        CGFloat ratio = (value - minValue) / (maxValue - minValue);
+        CGFloat offsetOnGraph = ratio * graphHeight;
 
-        return graphHeight - positionOnYAxis + self.graphXAxisHeight;
+        return offsetOnGraph + self.graphXAxisHeight + self.graphBottomPadding;
     }
 
     return 0.0f;
@@ -375,9 +398,9 @@
         [[BEMSimpleLineGraphView alloc] initWithFrame:self.scrollView.frame];
     [graphView setDataSource:self];
     [graphView setDelegate:self];
-    [graphView setColorTop:self.graphBackgroundColor];
-    [graphView setColorBottom:self.graphBackgroundColor];
     [graphView setColorLine:self.graphColor];
+    [graphView setColorTop:[UIColor clearColor]];
+    [graphView setColorBottom:[UIColor clearColor]];
     [graphView setWidthLine:self.lineWidth];
     [graphView setEnableTouchReport:NO];
     [graphView setEnablePopUpReport:NO];
@@ -408,6 +431,11 @@
     }
 
     [yAxisView setBackgroundColor:self.graphBackgroundColor];
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(yAxisColorForScrollableLineGraph:)])
+    {
+        [yAxisView setBackgroundColor:[self.delegate yAxisColorForScrollableLineGraph:self]];
+    }
 
     UIColor *indicatorColor = [UIColor blackColor];
     if(self.delegate &&
@@ -421,7 +449,7 @@
     NSUInteger stepCount = 7;  // hard code first
     CGFloat stepValue = (maxValue - minValue) / stepCount;
 
-    for (NSUInteger idx = 1; idx < stepCount; idx++) {
+    for (NSUInteger idx = 0; idx <= stepCount; idx++) {
         CGFloat currentValue = minValue + stepValue * idx;
 
         // create reference view and indicator view
