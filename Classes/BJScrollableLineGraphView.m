@@ -23,8 +23,11 @@
 #define DEFAULT_GRAPH_HORIZONTAL_PADDING (50.0f)
 #define DEFAULT_GRAPH_VERTICAL_PADDING (10.0f)
 
+#define DEFAULT_GRAPH_REFERENCE_LINE_COLOR [UIColor blackColor]
+
 @interface BJScrollableLineGraphView()
-    <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate>
+    <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate,
+    UIGestureRecognizerDelegate>
 {
     CAShapeLayer *_horizontalReferenceLayer;
     CAShapeLayer *_verticalReferenceLayer;
@@ -38,12 +41,15 @@
 
 @property (strong, nonatomic) NSLayoutConstraint *graphViewWidthConstraint;
 
+@property (strong, nonatomic) UITapGestureRecognizer *tapGesture;
+
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
 @property (nonatomic, readonly) CGFloat graphHorizontalPadding;
 @property (nonatomic, readonly) CGFloat graphTopPadding;
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
+@property (nonatomic, readonly) UIColor *referenceLineColor;
 
 @property (nonatomic, assign) NSUInteger referencingIndex;
 
@@ -165,7 +171,7 @@
                                       constant:self.frame.size.width]];
     if(self.dataSource){
         [self.graphViewWidthConstraint
-             setConstant:([self.dataSource numberOfPointsInScrollableLineGraph:self] *
+             setConstant:(([self.dataSource numberOfPointsInScrollableLineGraph:self] - 1) *
                           self.graphWidthPerDataRecord)];
     }
     [self.scrollView addConstraints:@[
@@ -302,7 +308,7 @@
     _graphWidthPerDataRecord = graphWidthPerDataRecord;
     if(self.graphView && self.dataSource){
         [self.graphViewWidthConstraint
-             setConstant:([self.dataSource numberOfPointsInScrollableLineGraph:self] *
+             setConstant:(([self.dataSource numberOfPointsInScrollableLineGraph:self] - 1) *
                           graphWidthPerDataRecord)];
         [self.graphView reloadGraph];
         [self reloadXAxisView:self.xAxisView];
@@ -386,27 +392,41 @@
 - (NSUInteger)graphXAxisLabelGap
 {
     if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(xAxisLabelGapForScrollableLableLineGraph:)]) {
-        return [self.delegate xAxisLabelGapForScrollableLableLineGraph:self];
+        [self.delegate respondsToSelector:@selector(xAxisLabelGapForScrollableLineGraph:)]) {
+        return [self.delegate xAxisLabelGapForScrollableLineGraph:self];
     }
     else return DEFAULT_GRAPH_X_LABEL_GAP;
+}
+
+- (UIColor *)referenceLineColor
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(referenceLineColorForScrollable:)]) {
+        return [self.delegate referenceLineColorForScrollable:self];
+    }
+    else return DEFAULT_GRAPH_REFERENCE_LINE_COLOR;
+}
+
+
+- (CGFloat)bottomOffsetOnGraphForValue:(CGFloat)value
+{
+    CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
+    CGFloat minValue = [self minValueForLineGraph:self.graphView];
+    CGFloat graphHeight = self.graphView.frame.size.height;
+
+    if (maxValue == minValue) {
+        return graphHeight / 2.0f;
+    }
+
+    return (value - minValue) / (maxValue - minValue) * graphHeight;
 }
 
 - (CGFloat)bottomOffsetForValue:(CGFloat)value
 {
     if(self.graphView){
-        CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
-        CGFloat minValue = [self minValueForLineGraph:self.graphView];
-        CGFloat graphHeight = self.graphView.frame.size.height;
-
-        if (maxValue == minValue) {
-            return graphHeight / 2.0f + self.graphXAxisHeight;
-        }
-
-        CGFloat ratio = (value - minValue) / (maxValue - minValue);
-        CGFloat offsetOnGraph = ratio * graphHeight;
-
-        return offsetOnGraph + self.graphXAxisHeight + self.graphBottomPadding;
+        return [self bottomOffsetOnGraphForValue:value] +
+                self.graphXAxisHeight +
+                self.graphBottomPadding;
     }
 
     return 0.0f;
@@ -429,6 +449,12 @@
     [graphView setAutoScaleYAxis:YES];
     [graphView setAnimationGraphEntranceTime:0];
     [graphView setAnimationGraphStyle:BEMLineAnimationNone];
+
+    [self setTapGesture:
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleTapGesture:)]];
+    [self.tapGesture setDelegate:self];
+    [graphView addGestureRecognizer:self.tapGesture];
 
     return graphView;
 }
@@ -768,16 +794,18 @@
         _horizontalReferenceLayer = [CAShapeLayer layer];
         [_horizontalReferenceLayer setBounds:self.scrollView.bounds];
         [_horizontalReferenceLayer setPosition:self.scrollView.center];
-        [_horizontalReferenceLayer setStrokeColor:[UIColor blackColor].CGColor];
+        [_horizontalReferenceLayer setStrokeColor:self.referenceLineColor.CGColor];
         [_horizontalReferenceLayer setFillColor:nil];
+        [_horizontalReferenceLayer setLineWidth:1.0f];
         [_horizontalReferenceLayer setLineDashPattern:@[@3, @3]];
     }
     if (!_verticalReferenceLayer) {
         _verticalReferenceLayer = [CAShapeLayer layer];
         [_verticalReferenceLayer setBounds:self.scrollView.bounds];
         [_verticalReferenceLayer setPosition:self.scrollView.center];
-        [_verticalReferenceLayer setStrokeColor:[UIColor blackColor].CGColor];
+        [_verticalReferenceLayer setStrokeColor:self.referenceLineColor.CGColor];
         [_verticalReferenceLayer setFillColor:nil];
+        [_horizontalReferenceLayer setLineWidth:1.0f];
         [_verticalReferenceLayer setLineDashPattern:@[@3, @3]];
     }
 
@@ -817,11 +845,44 @@
 
 - (void)removeReference
 {
-    //TODO: remove Reference
     _referencingIndex = NSNotFound;
     [_horizontalReferenceLayer removeFromSuperlayer];
     [_verticalReferenceLayer removeFromSuperlayer];
     [self.referenceCircleView setAlpha:0.0f];
+}
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)tapGesture
+{
+    CGPoint location = [tapGesture locationInView:self.graphView];
+    NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
+
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(scrollableLineGraph:didTapOnIndex:)]) {
+        [self.delegate scrollableLineGraph:self didTapOnIndex:closestIndex];
+    }
+}
+
+// override
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+        UITapGestureRecognizer *tapGesture = (UITapGestureRecognizer *)gestureRecognizer;
+        CGPoint location = [tapGesture locationInView:self.graphView];
+        if (location.x >= 0) {
+            NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
+            if (closestIndex < [self.dataSource numberOfPointsInScrollableLineGraph:self]) {
+                CGFloat theValue = [self.dataSource scrollableLineGraph:self
+                                                   valueForPointAtIndex:closestIndex];
+                CGFloat topOffset = self.graphView.frame.size.height -
+                                    [self bottomOffsetOnGraphForValue:theValue];
+
+                return ABS(topOffset - location.y) < 20.0f;
+            }
+        }
+        return NO;
+    }
+
+    return YES;
 }
 
 

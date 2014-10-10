@@ -36,8 +36,11 @@
 - (UIColor *)yAxisColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
-- (NSUInteger)xAxisLabelGapForScrollableLableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
+
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
+- (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index;
 
 @end
 

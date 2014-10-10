@@ -45,13 +45,7 @@
 {
     [super viewDidAppear:animated];
 
-    [self.scrollableLineGraph setReferenceAtIndex:0];
-
-    for (NSUInteger idx = 1; idx <= 10; idx++) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(idx * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.scrollableLineGraph setReferenceAtIndex:idx * 3];
-        });
-    }
+    [self.scrollableLineGraph setReferenceAtIndex:(DEFAULT_DATA_COUNT - 1)];
 }
 
 - (NSArray *)privateData
@@ -113,6 +107,26 @@
         [self.scrollableLineGraph reloadGraph];
     }
 }
+
+
+#ifdef __IPHONE_8_0
+// override
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    if (self.scrollableLineGraph) {
+        [self.scrollableLineGraph reloadGraph];
+    }
+}
+#else
+// override
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (self.scrollableLineGraph) {
+        [self.scrollableLineGraph reloadGraph];
+    }
+}
+#endif
 
 #pragma mark - BJScrollableLineGraphViewDataSource
 
@@ -189,7 +203,7 @@
     return [UIColor whiteColor];
 }
 
-- (NSUInteger)xAxisLabelGapForScrollableLableLineGraph:(BJScrollableLineGraphView *)graph
+- (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return 4;
 }
@@ -197,6 +211,11 @@
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return 33.0f;
+}
+
+- (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index
+{
+    [graph setReferenceAtIndex:index];
 }
 
 @end
