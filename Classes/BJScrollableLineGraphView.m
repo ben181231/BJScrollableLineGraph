@@ -24,6 +24,7 @@
 #define DEFAULT_GRAPH_VERTICAL_PADDING (10.0f)
 
 #define DEFAULT_GRAPH_REFERENCE_LINE_COLOR [UIColor blackColor]
+#define DEFAULT_GRAPH_REFERENCE_POPUP_COLOR [UIColor whiteColor]
 
 @interface BJScrollableLineGraphView()
     <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate,
@@ -31,6 +32,7 @@
 {
     CAShapeLayer *_horizontalReferenceLayer;
     CAShapeLayer *_verticalReferenceLayer;
+    CAShapeLayer *_popUpTriangleLayer;
 }
 
 @property (strong, nonatomic) UIScrollView *scrollView;
@@ -38,6 +40,7 @@
 @property (strong, nonatomic) UIView *xAxisView;
 @property (strong, nonatomic) UIView *yAxisView;
 @property (strong, nonatomic) UIView *referenceCircleView;
+@property (strong, nonatomic) UILabel *referencePopUpView;
 
 @property (strong, nonatomic) NSLayoutConstraint *graphViewWidthConstraint;
 
@@ -50,6 +53,7 @@
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
 @property (nonatomic, readonly) UIColor *referenceLineColor;
+@property (nonatomic, readonly) UIColor *referencePopUpColor;
 
 @property (nonatomic, assign) NSUInteger referencingIndex;
 
@@ -83,11 +87,7 @@
     [self setXAxisView:[self createXAxisView]];
 
     // -- Setup Referencing Views
-    _referencingIndex = NSNotFound;
-    [self setReferenceCircleView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 9, 9)]];
-    [self.referenceCircleView setBackgroundColor:self.graphColor];
-    [self.referenceCircleView.layer setCornerRadius:4.5f];
-    [self.referenceCircleView setAlpha:0.0f];
+    [self setupReferenceViews];
 
     // -- Add subviews --
     [self addSubview:self.scrollView];
@@ -95,6 +95,7 @@
     [self.scrollView addSubview:self.xAxisView];
     [self.scrollView addSubview:self.graphView];
     [self.scrollView addSubview:self.referenceCircleView];
+    [self.scrollView addSubview:self.referencePopUpView];
 
     // -- Add layout constraints --
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -405,6 +406,15 @@
         return [self.delegate referenceLineColorForScrollable:self];
     }
     else return DEFAULT_GRAPH_REFERENCE_LINE_COLOR;
+}
+
+- (UIColor *)referencePopUpColor
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(referencePopUpColorForScrollable:)]) {
+        return [self.delegate referencePopUpColorForScrollable:self];
+    }
+    else return DEFAULT_GRAPH_REFERENCE_POPUP_COLOR;
 }
 
 
@@ -783,6 +793,21 @@
                                 ]];
 }
 
+- (void)setupReferenceViews
+{
+    _referencingIndex = NSNotFound;
+    [self setReferenceCircleView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 9, 9)]];
+    [self.referenceCircleView setBackgroundColor:self.graphColor];
+    [self.referenceCircleView.layer setCornerRadius:4.5f];
+    [self.referenceCircleView setAlpha:0.0f];
+
+    [self setReferencePopUpView:[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 200)]];
+    [self.referencePopUpView setBackgroundColor:self.referencePopUpColor];
+    [self.referencePopUpView.layer setCornerRadius:4.0f];
+    [self.referencePopUpView setClipsToBounds:YES];
+    [self.referencePopUpView setAlpha:0.0f];
+}
+
 - (void)setReferenceAtIndex:(NSUInteger)index
 {
     if (index == NSNotFound) {
@@ -808,9 +833,17 @@
         [_horizontalReferenceLayer setLineWidth:1.0f];
         [_verticalReferenceLayer setLineDashPattern:@[@3, @3]];
     }
+    if (!_popUpTriangleLayer) {
+        _popUpTriangleLayer = [CAShapeLayer layer];
+        [_popUpTriangleLayer setBounds:self.scrollView.bounds];
+        [_popUpTriangleLayer setPosition:self.scrollView.center];
+        [_popUpTriangleLayer setStrokeColor:self.referencePopUpColor.CGColor];
+        [_popUpTriangleLayer setFillColor:self.referencePopUpColor.CGColor];
+    }
 
     [_horizontalReferenceLayer removeFromSuperlayer];
     [_verticalReferenceLayer removeFromSuperlayer];
+    [_popUpTriangleLayer removeFromSuperlayer];
 
     _referencingIndex = index;
 
@@ -820,27 +853,103 @@
                          self.graphYAxisWidth +
                          self.graphHorizontalPadding;
 
+    // Horizontal Reference Line
     CGMutablePathRef horizontalPath = CGPathCreateMutable();
     CGPathMoveToPoint(horizontalPath, NULL, leftOffset, topOffset);
     CGPathAddLineToPoint(horizontalPath, NULL, 0, topOffset);
-
     [_horizontalReferenceLayer setPath:horizontalPath];
+    CGPathRelease(horizontalPath);
+    [self.scrollView.layer insertSublayer:_horizontalReferenceLayer atIndex:0];
 
+    // Vertical Reference Line
     CGMutablePathRef verticalPath = CGPathCreateMutable();
     CGPathMoveToPoint(verticalPath, NULL, leftOffset, topOffset);
     CGPathAddLineToPoint(verticalPath, NULL, leftOffset,
                          self.scrollView.frame.size.height - self.graphXAxisHeight);
-
     [_verticalReferenceLayer setPath:verticalPath];
-
-    CGPathRelease(horizontalPath);
     CGPathRelease(verticalPath);
-
-    [self.scrollView.layer insertSublayer:_horizontalReferenceLayer atIndex:0];
     [self.scrollView.layer insertSublayer:_verticalReferenceLayer atIndex:0];
 
+    // Reference Circle View
     [self.referenceCircleView setCenter:CGPointMake(leftOffset, topOffset)];
     [self.referenceCircleView setAlpha:1.0f];
+
+    // Reference Pop Up View
+    CGRect currentFrame = self.referencePopUpView.frame;
+    CGFloat frameWidth = 0.0f;
+    CGFloat frameHeight = 0.0f;
+    CGFloat popUpOffset = 16.0f;
+    CGFloat popUpTriangleWidth = 15.0f;
+    CGFloat popUpTriangleHeight = 7.0f;
+    NSAttributedString *popUpString = nil;
+    if ([self.dataSource respondsToSelector:@selector(referencePopUpStringForIndex:)]) {
+        popUpString = [self.dataSource referencePopUpStringForIndex:index];
+    }
+    else{
+        NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+        paragraphStyle.alignment = NSTextAlignmentCenter;
+
+        popUpString =
+            [[NSAttributedString alloc]
+                initWithString:[NSString stringWithFormat:@"%.0f", value]
+                    attributes:@{
+                         NSParagraphStyleAttributeName: paragraphStyle,
+                                   NSFontAttributeName: [UIFont systemFontOfSize:13.0f]
+                         }];
+    }
+
+    frameWidth = currentFrame.size.width = MAX(85.0f, popUpString.size.width + 24.0f);
+    frameHeight = currentFrame.size.height = MAX(46.0f, popUpString.size.height + 15.0f);
+
+    [self.referencePopUpView setFrame:currentFrame];
+    [self.referencePopUpView setAttributedText:popUpString];
+    [self.referencePopUpView setAlpha:1.0f];
+
+
+    CGMutablePathRef popUpTrianglePath = CGPathCreateMutable();
+
+    if (topOffset > frameHeight + popUpTriangleHeight + popUpOffset * 2) {
+        [self.referencePopUpView setCenter:
+             CGPointMake(leftOffset, topOffset - currentFrame.size.height / 2.0f - popUpOffset)];
+
+        CGPathMoveToPoint(popUpTrianglePath,
+                          NULL,
+                          leftOffset - popUpTriangleWidth / 2.0f,
+                          topOffset - popUpOffset);
+        CGPathAddLineToPoint(popUpTrianglePath,
+                             NULL,
+                             leftOffset + popUpTriangleWidth / 2.0f,
+                             topOffset - popUpOffset);
+        CGPathAddLineToPoint(popUpTrianglePath,
+                             NULL,
+                             leftOffset,
+                             topOffset - popUpOffset + popUpTriangleHeight);
+
+    }
+    else{
+        [self.referencePopUpView setCenter:
+             CGPointMake(leftOffset, topOffset + currentFrame.size.height / 2.0f + popUpOffset)];
+
+        CGPathMoveToPoint(popUpTrianglePath,
+                          NULL,
+                          leftOffset - popUpTriangleWidth / 2.0f,
+                          topOffset + popUpOffset);
+        CGPathAddLineToPoint(popUpTrianglePath,
+                             NULL,
+                             leftOffset + popUpTriangleWidth / 2.0f,
+                             topOffset + popUpOffset);
+        CGPathAddLineToPoint(popUpTrianglePath,
+                             NULL,
+                             leftOffset,
+                             topOffset + popUpOffset - popUpTriangleHeight);
+    }
+
+   CGPathCloseSubpath(popUpTrianglePath);
+
+    [_popUpTriangleLayer setPath:popUpTrianglePath];
+    CGPathRelease(popUpTrianglePath);
+
+    [self.scrollView.layer addSublayer:_popUpTriangleLayer];
 }
 
 - (void)removeReference
@@ -848,7 +957,9 @@
     _referencingIndex = NSNotFound;
     [_horizontalReferenceLayer removeFromSuperlayer];
     [_verticalReferenceLayer removeFromSuperlayer];
+    [_popUpTriangleLayer removeFromSuperlayer];
     [self.referenceCircleView setAlpha:0.0f];
+    [self.referencePopUpView setAlpha:0.0f];
 }
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)tapGesture

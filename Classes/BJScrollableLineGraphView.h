@@ -19,6 +19,7 @@
 
 @optional
 - (NSAttributedString *)xAxisLabelStringForIndex:(NSUInteger)index;
+- (NSAttributedString *)referencePopUpStringForIndex:(NSUInteger)index;
 
 @end
 
@@ -38,6 +39,7 @@
 - (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
+- (UIColor *)referencePopUpColorForScrollable:(BJScrollableLineGraphView *)graph;
 
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index;
