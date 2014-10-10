@@ -59,6 +59,9 @@
 - (void)reloadGraph;
 - (CGFloat)bottomOffsetForValue:(CGFloat)value;
 - (void)setReferenceAtIndex:(NSUInteger)index;
+- (void)setReferenceAtIndex:(NSUInteger)index
+       withScrollViewUpdate:(BOOL)isUpdateScrollView
+                   animated:(BOOL)animated;
 - (void)removeReference;
 
 @end

@@ -115,7 +115,9 @@
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     if (self.scrollableLineGraph) {
-        [self.scrollableLineGraph reloadGraph];
+        [self.scrollableLineGraph performSelector:@selector(reloadGraph)
+                                       withObject:nil
+                                       afterDelay:0.1f];
     }
 }
 #else
@@ -215,7 +217,7 @@
 
 - (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index
 {
-    [graph setReferenceAtIndex:index];
+    [graph setReferenceAtIndex:index withScrollViewUpdate:YES animated:YES];
 }
 
 @end

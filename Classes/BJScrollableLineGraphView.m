@@ -45,6 +45,7 @@
 @property (strong, nonatomic) NSLayoutConstraint *graphViewWidthConstraint;
 
 @property (strong, nonatomic) UITapGestureRecognizer *tapGesture;
+@property (strong, nonatomic) UIPanGestureRecognizer *popUpPanGesture;
 
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
@@ -806,9 +807,25 @@
     [self.referencePopUpView.layer setCornerRadius:4.0f];
     [self.referencePopUpView setClipsToBounds:YES];
     [self.referencePopUpView setAlpha:0.0f];
+    [self.referencePopUpView setUserInteractionEnabled:YES];
+
+    [self setPopUpPanGesture:
+        [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)]];
+    [self.popUpPanGesture setMaximumNumberOfTouches:1];
+    [self.popUpPanGesture setDelegate:self];
+
+    [self.referencePopUpView addGestureRecognizer:self.popUpPanGesture];
+    [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.popUpPanGesture];
 }
 
 - (void)setReferenceAtIndex:(NSUInteger)index
+{
+    [self setReferenceAtIndex:index withScrollViewUpdate:NO animated:NO];
+}
+
+- (void)setReferenceAtIndex:(NSUInteger)index
+       withScrollViewUpdate:(BOOL)isUpdateScrollView
+                   animated:(BOOL)animated
 {
     if (index == NSNotFound) {
         [self removeReference];
@@ -905,7 +922,6 @@
     [self.referencePopUpView setAttributedText:popUpString];
     [self.referencePopUpView setAlpha:1.0f];
 
-
     CGMutablePathRef popUpTrianglePath = CGPathCreateMutable();
 
     if (topOffset > frameHeight + popUpTriangleHeight + popUpOffset * 2) {
@@ -950,6 +966,14 @@
     CGPathRelease(popUpTrianglePath);
 
     [self.scrollView.layer addSublayer:_popUpTriangleLayer];
+
+    if(isUpdateScrollView){
+        currentFrame = self.referencePopUpView.frame;
+        currentFrame.origin.x -= self.graphYAxisWidth;
+        currentFrame.size.width += self.graphYAxisWidth * 2;
+        [self.scrollView scrollRectToVisible:currentFrame
+                                    animated:animated];
+    }
 }
 
 - (void)removeReference
@@ -973,7 +997,18 @@
     }
 }
 
-// override
+- (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
+{
+    CGPoint location = [panGesture locationInView:self.graphView];
+
+    if(CGRectContainsPoint(self.graphView.bounds, location)){
+        NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
+        [self setReferenceAtIndex:closestIndex withScrollViewUpdate:YES animated:NO];
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
@@ -995,7 +1030,6 @@
 
     return YES;
 }
-
 
 #pragma mark - BEMSimpleLineGraphDataSource
 
