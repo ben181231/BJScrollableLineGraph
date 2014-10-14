@@ -40,6 +40,7 @@
 - (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referencePopUpColorForScrollable:(BJScrollableLineGraphView *)graph;
+- (BOOL)referencePopUpDragableForScrollable:(BJScrollableLineGraphView *)graph;
 
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index;

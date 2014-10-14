@@ -999,6 +999,12 @@
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
 {
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(referencePopUpDragableForScrollable:)] &&
+        ![self.delegate referencePopUpDragableForScrollable:self]) {
+        return;
+    }
+
     CGPoint location = [panGesture locationInView:self.graphView];
 
     if(CGRectContainsPoint(self.graphView.bounds, location)){
