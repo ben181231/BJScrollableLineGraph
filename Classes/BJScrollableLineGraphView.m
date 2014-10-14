@@ -377,7 +377,7 @@
 {
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(topPaddingForScrollableLineGraph:)]){
-        return [self.delegate horizontalPaddingForScrollableLineGraph:self];
+        return [self.delegate topPaddingForScrollableLineGraph:self];
     }
     else return DEFAULT_GRAPH_VERTICAL_PADDING;
 }
@@ -386,7 +386,7 @@
 {
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(bottomPaddingForScrollableLineGraph:)]){
-        return [self.delegate horizontalPaddingForScrollableLineGraph:self];
+        return [self.delegate bottomPaddingForScrollableLineGraph:self];
     }
     else return DEFAULT_GRAPH_VERTICAL_PADDING;
 }
@@ -839,7 +839,7 @@
         [_horizontalReferenceLayer setStrokeColor:self.referenceLineColor.CGColor];
         [_horizontalReferenceLayer setFillColor:nil];
         [_horizontalReferenceLayer setLineWidth:1.0f];
-        [_horizontalReferenceLayer setLineDashPattern:@[@3, @3]];
+        [_horizontalReferenceLayer setLineDashPattern:@[@1, @1]];
     }
     if (!_verticalReferenceLayer) {
         _verticalReferenceLayer = [CAShapeLayer layer];
@@ -848,7 +848,7 @@
         [_verticalReferenceLayer setStrokeColor:self.referenceLineColor.CGColor];
         [_verticalReferenceLayer setFillColor:nil];
         [_horizontalReferenceLayer setLineWidth:1.0f];
-        [_verticalReferenceLayer setLineDashPattern:@[@3, @3]];
+        [_verticalReferenceLayer setLineDashPattern:@[@1, @1]];
     }
     if (!_popUpTriangleLayer) {
         _popUpTriangleLayer = [CAShapeLayer layer];
