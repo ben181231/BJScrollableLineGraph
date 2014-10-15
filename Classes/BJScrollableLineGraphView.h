@@ -34,6 +34,7 @@
 - (CGFloat)horizontalPaddingForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (CGFloat)topPaddingForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (CGFloat)bottomPaddingForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)yAxisLabelCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)yAxisColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;

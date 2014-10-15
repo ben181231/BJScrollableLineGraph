@@ -18,6 +18,8 @@
 #define DEFAULT_GRAPH_MAX_VALUE (1000.0f)
 #define DEFAULT_GRAPH_MIN_VALUE (-1000.f)
 #define DEFAULT_GRAPH_X_LABEL_GAP (1)
+#define DEFAULT_GRAPH_Y_LABEL_COUNT (7)
+#define DEFAULT_GRAPH_Y_LABEL_COUNT_MIN (3)
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
 #define DEFAULT_GRAPH_Y_AXIS_WIDTH (48.0f)
 #define DEFAULT_GRAPH_HORIZONTAL_PADDING (50.0f)
@@ -53,6 +55,7 @@
 @property (nonatomic, readonly) CGFloat graphTopPadding;
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
+@property (nonatomic, readonly) NSUInteger graphYAxisLabelCount;
 @property (nonatomic, readonly) UIColor *referenceLineColor;
 @property (nonatomic, readonly) UIColor *referencePopUpColor;
 
@@ -400,6 +403,15 @@
     else return DEFAULT_GRAPH_X_LABEL_GAP;
 }
 
+- (NSUInteger)graphYAxisLabelCount
+{
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(yAxisLabelCountForScrollableLineGraph:)]){
+        return MAX(DEFAULT_GRAPH_Y_LABEL_COUNT_MIN,
+                   [self.delegate yAxisLabelCountForScrollableLineGraph:self]);
+    }else return DEFAULT_GRAPH_Y_LABEL_COUNT;
+}
+
 - (UIColor *)referenceLineColor
 {
     if (self.delegate &&
@@ -503,7 +515,7 @@
 
     CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
     CGFloat minValue = [self minValueForLineGraph:self.graphView];
-    NSUInteger stepCount = 7;  // hard code first
+    NSUInteger stepCount = self.graphYAxisLabelCount - 1;
     CGFloat stepValue = (maxValue - minValue) / stepCount;
 
     for (NSUInteger idx = 0; idx <= stepCount; idx++) {

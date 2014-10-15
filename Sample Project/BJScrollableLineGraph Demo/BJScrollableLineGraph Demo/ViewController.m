@@ -190,6 +190,11 @@
     return  minValue > 0 ? 0.8f * minValue : 1.2f * minValue;
 }
 
+- (NSUInteger)yAxisLabelCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return 5;
+}
+
 - (UIColor *)yAxisColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return [UIColor lightGrayColor];
