@@ -49,6 +49,10 @@
 @property (strong, nonatomic) UITapGestureRecognizer *tapGesture;
 @property (strong, nonatomic) UIPanGestureRecognizer *popUpPanGesture;
 
+@property (strong, nonatomic) NSNumber *maxValue;
+@property (strong, nonatomic) NSNumber *minValue;
+@property (strong, nonatomic) NSNumber *numberOfData;
+
 @property (nonatomic, readonly) CGFloat graphYAxisWidth;
 @property (nonatomic, readonly) CGFloat graphXAxisHeight;
 @property (nonatomic, readonly) CGFloat graphHorizontalPadding;
@@ -176,7 +180,7 @@
                                       constant:self.frame.size.width]];
     if(self.dataSource){
         [self.graphViewWidthConstraint
-             setConstant:(([self.dataSource numberOfPointsInScrollableLineGraph:self] - 1) *
+             setConstant:ABS(([self.numberOfData integerValue] - 1) *
                           self.graphWidthPerDataRecord)];
     }
     [self.scrollView addConstraints:@[
@@ -313,7 +317,7 @@
     _graphWidthPerDataRecord = graphWidthPerDataRecord;
     if(self.graphView && self.dataSource){
         [self.graphViewWidthConstraint
-             setConstant:(([self.dataSource numberOfPointsInScrollableLineGraph:self] - 1) *
+             setConstant:ABS(([self.numberOfData integerValue] - 1) *
                           graphWidthPerDataRecord)];
         [self.graphView reloadGraph];
         [self reloadXAxisView:self.xAxisView];
@@ -331,21 +335,79 @@
 
 - (void)reloadGraph
 {
+    // clear max / min data, reload it from delegate
+    [self setMaxValue:nil];
+    [self setMinValue:nil];
+
+    // clear data count, reload it from dataSource
+    [self setNumberOfData:nil];
+
+    // reload graph view
     if(self.graphView){
         [self.graphView reloadGraph];
     }
 
+    // reload y axis view
     if(self.yAxisView){
         [self reloadYAxisView:self.yAxisView];
     }
 
+    // reload x axis view
     if(self.xAxisView){
         [self reloadXAxisView:self.xAxisView];
     }
 
+    // reload the referencing view
     if (self.referencingIndex != NSNotFound) {
-        [self setReferenceAtIndex:self.referencingIndex];
+        if([self.numberOfData integerValue] > 1){
+            [self setReferenceAtIndex:self.referencingIndex];
+        }
+        else{
+            [self removeReference];
+        }
     }
+}
+
+- (NSNumber *)maxValue
+{
+    if (_maxValue) {
+        return _maxValue;
+    }
+
+    if(self.delegate){
+        _maxValue = @([self.delegate maxValueForScrollableLineGraph:self]);
+    }
+    else _maxValue = @(DEFAULT_GRAPH_MAX_VALUE);
+
+    return _maxValue;
+}
+
+- (NSNumber *)minValue
+{
+    if (_minValue) {
+        return _minValue;
+    }
+
+    if(self.delegate){
+        _minValue = @([self.delegate minValueForScrollableLineGraph:self]);
+    }
+    else _minValue = @(DEFAULT_GRAPH_MIN_VALUE);
+
+    return _minValue;
+}
+
+- (NSNumber *)numberOfData
+{
+    if(_numberOfData){
+        return _numberOfData;
+    }
+
+    if(self.dataSource){
+        _numberOfData = @([self.dataSource numberOfPointsInScrollableLineGraph:self]);
+    }
+    else _numberOfData = @0;
+
+    return _numberOfData;
 }
 
 - (CGFloat)graphXAxisHeight
@@ -433,8 +495,8 @@
 
 - (CGFloat)bottomOffsetOnGraphForValue:(CGFloat)value
 {
-    CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
-    CGFloat minValue = [self minValueForLineGraph:self.graphView];
+    CGFloat maxValue = [self.maxValue floatValue];
+    CGFloat minValue = [self.minValue floatValue];
     CGFloat graphHeight = self.graphView.frame.size.height;
 
     if (maxValue == minValue) {
@@ -513,8 +575,8 @@
         indicatorColor = [self.delegate yAxisIndicatorColorForScrollableLineGraph:self];
     }
 
-    CGFloat maxValue = [self maxValueForLineGraph:self.graphView];
-    CGFloat minValue = [self minValueForLineGraph:self.graphView];
+    CGFloat maxValue = [self.maxValue floatValue];
+    CGFloat minValue = [self.minValue floatValue];
     NSUInteger stepCount = self.graphYAxisLabelCount - 1;
     CGFloat stepValue = (maxValue - minValue) / stepCount;
 
@@ -674,7 +736,7 @@
 
     BOOL isLongIndicator = NO;
     CGFloat lastOffset = 0.0f;
-    NSUInteger dataRecordCount = [self.dataSource numberOfPointsInScrollableLineGraph:self];
+    NSUInteger dataRecordCount = [self.numberOfData integerValue];
     for (NSUInteger idx = 0;
          idx < dataRecordCount + self.graphXAxisLabelGap + 1;   // extend one more label
          idx += (self.graphXAxisLabelGap + 1)) {
@@ -1034,7 +1096,7 @@
         CGPoint location = [tapGesture locationInView:self.graphView];
         if (location.x >= 0) {
             NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
-            if (closestIndex < [self.dataSource numberOfPointsInScrollableLineGraph:self]) {
+            if (closestIndex < [self.numberOfData integerValue]) {
                 CGFloat theValue = [self.dataSource scrollableLineGraph:self
                                                    valueForPointAtIndex:closestIndex];
                 CGFloat topOffset = self.graphView.frame.size.height -
@@ -1053,10 +1115,7 @@
 
 - (NSInteger)numberOfPointsInLineGraph:(BEMSimpleLineGraphView *)graph
 {
-    if(self.dataSource){
-        return [self.dataSource numberOfPointsInScrollableLineGraph:self];
-    }
-    return 0;
+    return [self.numberOfData integerValue];
 }
 
 - (CGFloat)lineGraph:(BEMSimpleLineGraphView *)graph valueForPointAtIndex:(NSInteger)index
@@ -1071,18 +1130,17 @@
 
 - (CGFloat)maxValueForLineGraph:(BEMSimpleLineGraphView *)graph
 {
-    if(self.delegate){
-        return [self.delegate maxValueForScrollableLineGraph:self];
-    }
-    return DEFAULT_GRAPH_MAX_VALUE;
+    return [self.maxValue floatValue];
 }
 
 - (CGFloat)minValueForLineGraph:(BEMSimpleLineGraphView *)graph
 {
-    if(self.delegate){
-        return [self.delegate minValueForScrollableLineGraph:self];
-    }
-    return DEFAULT_GRAPH_MIN_VALUE;
+    return [self.minValue floatValue];
+}
+
+- (BOOL)noDataLabelEnableForLineGraph:(BEMSimpleLineGraphView *)graph
+{
+    return NO;
 }
 
 - (CGFloat)staticPaddingForLineGraph:(BEMSimpleLineGraphView *)graph

@@ -12,7 +12,7 @@
 
 @protocol BJScrollableLineGraphViewDataSource <NSObject>
 @required
-- (NSInteger)numberOfPointsInScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)numberOfPointsInScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (CGFloat)scrollableLineGraph:(BJScrollableLineGraphView *)graph
           valueForPointAtIndex:(NSInteger)index;
 - (NSAttributedString *)yAxisLabelStringForValue:(CGFloat)value;
