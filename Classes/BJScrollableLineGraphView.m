@@ -988,6 +988,10 @@
     frameWidth = currentFrame.size.width = MAX(85.0f, popUpString.size.width + 24.0f);
     frameHeight = currentFrame.size.height = MAX(46.0f, popUpString.size.height + 15.0f);
 
+    [self.referencePopUpView setNumberOfLines:
+        ([[popUpString.string
+           componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]
+          count])];
     [self.referencePopUpView setFrame:currentFrame];
     [self.referencePopUpView setAttributedText:popUpString];
     [self.referencePopUpView setAlpha:1.0f];
