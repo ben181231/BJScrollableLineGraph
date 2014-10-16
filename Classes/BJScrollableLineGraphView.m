@@ -178,11 +178,6 @@
                                      attribute:NSLayoutAttributeNotAnAttribute
                                     multiplier:1.0f
                                       constant:self.frame.size.width]];
-    if(self.dataSource){
-        [self.graphViewWidthConstraint
-             setConstant:ABS(([self.numberOfData integerValue] - 1) *
-                          self.graphWidthPerDataRecord)];
-    }
     [self.scrollView addConstraints:@[
         [NSLayoutConstraint constraintWithItem:self.graphView
                                      attribute:NSLayoutAttributeTop
@@ -252,6 +247,8 @@
                                     multiplier:1.0f
                                       constant:0.0f]
         ]];
+
+    [self reloadGraph];
 }
 
 - (void)setGraphColor:(UIColor *)graphColor
@@ -315,13 +312,7 @@
 - (void)setGraphWidthPerDataRecord:(CGFloat)graphWidthPerDataRecord
 {
     _graphWidthPerDataRecord = graphWidthPerDataRecord;
-    if(self.graphView && self.dataSource){
-        [self.graphViewWidthConstraint
-             setConstant:ABS(([self.numberOfData integerValue] - 1) *
-                          graphWidthPerDataRecord)];
-        [self.graphView reloadGraph];
-        [self reloadXAxisView:self.xAxisView];
-    }
+    [self updateGraphWidth];
 }
 
 - (CGFloat)graphWidthPerDataRecord
@@ -331,6 +322,16 @@
     }
 
     return _graphWidthPerDataRecord;
+}
+
+- (void)updateGraphWidth
+{
+    if(self.graphView && self.dataSource){
+        [self.graphViewWidthConstraint
+            setConstant:ABS(([self.numberOfData integerValue] - 1) * self.graphWidthPerDataRecord)];
+        [self.graphView reloadGraph];
+        [self reloadXAxisView:self.xAxisView];
+    }
 }
 
 - (void)reloadGraph
@@ -343,9 +344,7 @@
     [self setNumberOfData:nil];
 
     // reload graph view
-    if(self.graphView){
-        [self.graphView reloadGraph];
-    }
+    [self.graphView reloadGraph];
 
     // reload y axis view
     if(self.yAxisView){
@@ -359,12 +358,7 @@
 
     // reload the referencing view
     if (self.referencingIndex != NSNotFound) {
-        if([self.numberOfData integerValue] > 1){
-            [self setReferenceAtIndex:self.referencingIndex];
-        }
-        else{
-            [self removeReference];
-        }
+        [self setReferenceAtIndex:self.referencingIndex];
     }
 }
 
@@ -406,6 +400,8 @@
         _numberOfData = @([self.dataSource numberOfPointsInScrollableLineGraph:self]);
     }
     else _numberOfData = @0;
+
+    [self updateGraphWidth];
 
     return _numberOfData;
 }
@@ -901,7 +897,7 @@
        withScrollViewUpdate:(BOOL)isUpdateScrollView
                    animated:(BOOL)animated
 {
-    if (index == NSNotFound) {
+    if (index == NSNotFound || [self.numberOfData integerValue] <= 1) {
         [self removeReference];
         return;
     }
