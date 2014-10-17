@@ -917,7 +917,7 @@
         [_verticalReferenceLayer setPosition:self.scrollView.center];
         [_verticalReferenceLayer setStrokeColor:self.referenceLineColor.CGColor];
         [_verticalReferenceLayer setFillColor:nil];
-        [_horizontalReferenceLayer setLineWidth:1.0f];
+        [_verticalReferenceLayer setLineWidth:1.0f];
         [_verticalReferenceLayer setLineDashPattern:@[@1, @1]];
     }
     if (!_popUpTriangleLayer) {
