@@ -336,6 +336,11 @@
 
 - (void)reloadGraph
 {
+    if(self.scrollView.isTracking){
+        NSLog(@"Warning: BJScrollableLineGraph is dragging, abort reload graph.");
+        return;
+    }
+
     // clear max / min data, reload it from delegate
     [self setMaxValue:nil];
     [self setMinValue:nil];
