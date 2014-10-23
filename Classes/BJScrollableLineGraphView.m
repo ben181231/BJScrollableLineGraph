@@ -1086,11 +1086,21 @@
     }
 
     CGPoint location = [panGesture locationInView:self.graphView];
+    CGRect graphViewBounds = self.graphView.bounds;
 
-    if(CGRectContainsPoint(self.graphView.bounds, location)){
-        NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
-        [self setReferenceAtIndex:closestIndex withScrollViewUpdate:YES animated:NO];
-    }
+    if (location.x < graphViewBounds.origin.x) location.x = graphViewBounds.origin.x;
+    if (location.x > graphViewBounds.origin.x + graphViewBounds.size.width)
+        location.x = graphViewBounds.origin.x + graphViewBounds.size.width;
+
+    if (location.y < graphViewBounds.origin.y) location.y = graphViewBounds.origin.y;
+    if (location.y > graphViewBounds.origin.y + graphViewBounds.size.height)
+        location.y = graphViewBounds.origin.y + graphViewBounds.size.height;
+
+    NSUInteger closestIndex = roundf(location.x / self.graphWidthPerDataRecord);
+    NSInteger maxIndex = [self.numberOfData integerValue] - 1;
+    while(closestIndex > maxIndex) closestIndex--;
+
+    [self setReferenceAtIndex:closestIndex withScrollViewUpdate:YES animated:NO];
 }
 
 #pragma mark - UIGestureRecognizerDelegate
