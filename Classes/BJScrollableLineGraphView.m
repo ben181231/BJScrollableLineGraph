@@ -362,9 +362,7 @@
     }
 
     // reload the referencing view
-    if (self.referencingIndex != NSNotFound) {
-        [self setReferenceAtIndex:self.referencingIndex];
-    }
+    [self setReferenceAtIndex:self.referencingIndex];
 }
 
 - (NSNumber *)maxValue
@@ -902,7 +900,10 @@
        withScrollViewUpdate:(BOOL)isUpdateScrollView
                    animated:(BOOL)animated
 {
-    if (index == NSNotFound || [self.numberOfData integerValue] <= 1) {
+    if (index == NSNotFound ||
+        index >= [self.numberOfData integerValue] ||
+        [self.numberOfData integerValue] <= 1) {
+
         [self removeReference];
         return;
     }
