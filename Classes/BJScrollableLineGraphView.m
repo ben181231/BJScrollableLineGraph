@@ -954,11 +954,13 @@
 
     _referencingIndex = index;
 
+    CGFloat yAxisWidth = self.graphYAxisWidth;
+    CGFloat hPadding = self.graphHorizontalPadding;
+    CGFloat graphWidth = self.graphViewWidthConstraint.constant;
+
     CGFloat value = [self.dataSource scrollableLineGraph:self valueForPointAtIndex:index];
     CGFloat topOffset = self.scrollView.frame.size.height - [self bottomOffsetForValue:value];
-    CGFloat leftOffset = self.graphWidthPerDataRecord * index +
-                         self.graphYAxisWidth +
-                         self.graphHorizontalPadding;
+    CGFloat leftOffset = self.graphWidthPerDataRecord * index + yAxisWidth + hPadding;
 
     // Horizontal Reference Line
     CGMutablePathRef horizontalPath = CGPathCreateMutable();
@@ -1018,9 +1020,20 @@
 
     CGMutablePathRef popUpTrianglePath = CGPathCreateMutable();
 
+    CGFloat halfFrameWidth = frameWidth / 2.0f;
+    CGFloat popUpViewLeftOffset = 0.0f;
+
+    if (halfFrameWidth + yAxisWidth - leftOffset > 0) {
+        popUpViewLeftOffset = halfFrameWidth + yAxisWidth - leftOffset;
+    }
+    else if(leftOffset + halfFrameWidth > graphWidth + hPadding * 2 + yAxisWidth){
+        popUpViewLeftOffset = graphWidth + hPadding * 2 + yAxisWidth - leftOffset - halfFrameWidth;
+    }
+
     if (topOffset > frameHeight + popUpTriangleHeight + popUpOffset * 2) {
         [self.referencePopUpView setCenter:
-             CGPointMake(leftOffset, topOffset - currentFrame.size.height / 2.0f - popUpOffset)];
+             CGPointMake(leftOffset + popUpViewLeftOffset,
+                         topOffset - frameHeight / 2.0f - popUpOffset)];
 
         CGPathMoveToPoint(popUpTrianglePath,
                           NULL,
@@ -1038,7 +1051,8 @@
     }
     else{
         [self.referencePopUpView setCenter:
-             CGPointMake(leftOffset, topOffset + currentFrame.size.height / 2.0f + popUpOffset)];
+             CGPointMake(leftOffset + popUpViewLeftOffset,
+                         topOffset + frameHeight / 2.0f + popUpOffset)];
 
         CGPathMoveToPoint(popUpTrianglePath,
                           NULL,
