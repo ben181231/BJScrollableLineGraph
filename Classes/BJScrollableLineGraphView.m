@@ -18,6 +18,7 @@
 #define DEFAULT_GRAPH_MAX_VALUE (1000.0f)
 #define DEFAULT_GRAPH_MIN_VALUE (-1000.f)
 #define DEFAULT_GRAPH_X_LABEL_GAP (1)
+#define DEFAULT_GRAPH_X_LABEL_EXTEND_COUNT (0)
 #define DEFAULT_GRAPH_Y_LABEL_COUNT (7)
 #define DEFAULT_GRAPH_Y_LABEL_COUNT_MIN (3)
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
@@ -59,6 +60,7 @@
 @property (nonatomic, readonly) CGFloat graphTopPadding;
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
+@property (nonatomic, readonly) NSUInteger graphXAxisLabelExtendCount;
 @property (nonatomic, readonly) NSUInteger graphYAxisLabelCount;
 @property (nonatomic, readonly) UIColor *referenceLineColor;
 @property (nonatomic, readonly) UIColor *referencePopUpColor;
@@ -464,6 +466,16 @@
     else return DEFAULT_GRAPH_X_LABEL_GAP;
 }
 
+- (NSUInteger)graphXAxisLabelExtendCount
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:
+         @selector(xAxisLabelEntendCountForScrollableLineGraph:)]) {
+            return [self.delegate xAxisLabelEntendCountForScrollableLineGraph:self];
+        }
+    else return DEFAULT_GRAPH_X_LABEL_EXTEND_COUNT;
+}
+
 - (NSUInteger)graphYAxisLabelCount
 {
     if(self.delegate &&
@@ -735,10 +747,12 @@
 
     BOOL isLongIndicator = NO;
     CGFloat lastOffset = 0.0f;
+    NSUInteger perIndexJump = self.graphXAxisLabelGap + 1;
+    NSUInteger extendCount = self.graphXAxisLabelExtendCount;
     NSUInteger dataRecordCount = [self.numberOfData integerValue];
     for (NSUInteger idx = 0;
-         idx < dataRecordCount + self.graphXAxisLabelGap + 1;   // extend one more label
-         idx += (self.graphXAxisLabelGap + 1)) {
+         idx < dataRecordCount + extendCount * perIndexJump;
+         idx += perIndexJump) {
 
         CGFloat perOffset = idx * self.graphWidthPerDataRecord;
         lastOffset = perOffset;
