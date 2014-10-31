@@ -1026,7 +1026,8 @@
     if (halfFrameWidth + yAxisWidth - leftOffset > 0) {
         popUpViewLeftOffset = halfFrameWidth + yAxisWidth - leftOffset;
     }
-    else if(leftOffset + halfFrameWidth > graphWidth + hPadding * 2 + yAxisWidth){
+    else if(graphWidth > frameWidth  &&
+            leftOffset + halfFrameWidth > graphWidth + hPadding * 2 + yAxisWidth){
         popUpViewLeftOffset = graphWidth + hPadding * 2 + yAxisWidth - leftOffset - halfFrameWidth;
     }
 
