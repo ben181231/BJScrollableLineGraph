@@ -527,8 +527,8 @@
 - (UIColor *)referenceLineColor
 {
     if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(referenceLineColorForScrollable:)]) {
-        return [self.delegate referenceLineColorForScrollable:self];
+        [self.delegate respondsToSelector:@selector(referenceLineColorForScrollableGraph:)]) {
+        return [self.delegate referenceLineColorForScrollableGraph:self];
     }
     else return DEFAULT_GRAPH_REFERENCE_LINE_COLOR;
 }
@@ -536,8 +536,8 @@
 - (UIColor *)referencePopUpColor
 {
     if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(referencePopUpColorForScrollable:)]) {
-        return [self.delegate referencePopUpColorForScrollable:self];
+        [self.delegate respondsToSelector:@selector(referencePopUpColorForScrollableGraph:)]) {
+        return [self.delegate referencePopUpColorForScrollableGraph:self];
     }
     else return DEFAULT_GRAPH_REFERENCE_POPUP_COLOR;
 }
@@ -545,8 +545,8 @@
 - (BOOL)isReferencePopUpFollowing
 {
     if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(referencePopUpFollowingForScrollable:)]) {
-        return [self.delegate referencePopUpFollowingForScrollable:self];
+        [self.delegate respondsToSelector:@selector(referencePopUpFollowingForScrollableGraph:)]) {
+        return [self.delegate referencePopUpFollowingForScrollableGraph:self];
     }
     else return DEFAULT_GRAPH_REFERENCE_POPUP_FOLLOWING;
 }
@@ -1197,8 +1197,8 @@
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
 {
     if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(referencePopUpDragableForScrollable:)] &&
-        ![self.delegate referencePopUpDragableForScrollable:self]) {
+        [self.delegate respondsToSelector:@selector(referencePopUpDragableForScrollableGraph:)] &&
+        ![self.delegate referencePopUpDragableForScrollableGraph:self]) {
         return;
     }
 

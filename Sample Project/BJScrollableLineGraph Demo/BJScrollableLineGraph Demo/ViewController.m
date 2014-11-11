@@ -230,12 +230,12 @@
     [graph setReferenceAtIndex:index withScrollViewUpdate:YES animated:YES];
 }
 
-- (BOOL)referencePopUpDragableForScrollable:(BJScrollableLineGraphView *)graph
+- (BOOL)referencePopUpDragableForScrollableGraph:(BJScrollableLineGraphView *)graph
 {
     return YES;
 }
 
-- (BOOL)referencePopUpFollowingForScrollable:(BJScrollableLineGraphView *)graph
+- (BOOL)referencePopUpFollowingForScrollableGraph:(BJScrollableLineGraphView *)graph
 {
     return YES;
 }

@@ -41,10 +41,10 @@
 - (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (NSUInteger)xAxisLabelExtendCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (NSUInteger)xAxisLabelInitialOffsetForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
-- (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
-- (UIColor *)referencePopUpColorForScrollable:(BJScrollableLineGraphView *)graph;
-- (BOOL)referencePopUpDragableForScrollable:(BJScrollableLineGraphView *)graph;
-- (BOOL)referencePopUpFollowingForScrollable:(BJScrollableLineGraphView *)graph;
+- (UIColor *)referenceLineColorForScrollableGraph:(BJScrollableLineGraphView *)graph;
+- (UIColor *)referencePopUpColorForScrollableGraph:(BJScrollableLineGraphView *)graph;
+- (BOOL)referencePopUpDragableForScrollableGraph:(BJScrollableLineGraphView *)graph;
+- (BOOL)referencePopUpFollowingForScrollableGraph:(BJScrollableLineGraphView *)graph;
 
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index;
