@@ -132,7 +132,7 @@
 
 #pragma mark - BJScrollableLineGraphViewDataSource
 
-- (NSInteger)numberOfPointsInScrollableLineGraph:(BJScrollableLineGraphView *)graph
+- (NSUInteger)numberOfPointsInScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return [self.graphDataArray count];
 }
@@ -213,6 +213,11 @@
 - (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return 4;
+}
+
+- (NSUInteger)xAxisLabelExtendCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph
+{
+    return 1;
 }
 
 - (CGFloat)yAxisWidthForScrollableLineGraph:(BJScrollableLineGraphView *)graph
