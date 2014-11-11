@@ -203,7 +203,7 @@
                                         toItem:self
                                      attribute:NSLayoutAttributeBottom
                                     multiplier:1.0f
-                                      constant:0.0f],
+                                      constant:-self.graphXAxisHeight],
         [NSLayoutConstraint constraintWithItem:self.yAxisBackgroundView
                                      attribute:NSLayoutAttributeLeading
                                      relatedBy:NSLayoutRelationEqual
@@ -325,7 +325,12 @@
     _graphBackgroundColor = graphBackgroundColor;
     if(self.graphView){
         [self.scrollView setBackgroundColor:graphBackgroundColor];
-        [self.yAxisBackgroundView setBackgroundColor:graphBackgroundColor];
+
+        if (!self.delegate ||
+            ![self.delegate respondsToSelector:@selector(yAxisColorForScrollableLineGraph:)])
+        {
+            [self.yAxisBackgroundView setBackgroundColor:graphBackgroundColor];
+        }
     }
 
     [self reloadGraph];
