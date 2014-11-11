@@ -19,6 +19,7 @@
 #define DEFAULT_GRAPH_MIN_VALUE (-1000.f)
 #define DEFAULT_GRAPH_X_LABEL_GAP (1)
 #define DEFAULT_GRAPH_X_LABEL_EXTEND_COUNT (0)
+#define DEFAULT_GRAPH_X_LABEL_INITIAL_OFFSET (0)
 #define DEFAULT_GRAPH_Y_LABEL_COUNT (7)
 #define DEFAULT_GRAPH_Y_LABEL_COUNT_MIN (3)
 #define DEFAULT_GRAPH_X_AXIS_HEIGHT (25.0f)
@@ -63,6 +64,7 @@
 @property (nonatomic, readonly) CGFloat graphBottomPadding;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelGap;
 @property (nonatomic, readonly) NSUInteger graphXAxisLabelExtendCount;
+@property (nonatomic, readonly) NSUInteger graphXAxisLabelInitialOffset;
 @property (nonatomic, readonly) NSUInteger graphYAxisLabelCount;
 @property (nonatomic, readonly) UIColor *referenceLineColor;
 @property (nonatomic, readonly) UIColor *referencePopUpColor;
@@ -487,10 +489,21 @@
 {
     if (self.delegate &&
         [self.delegate respondsToSelector:
-         @selector(xAxisLabelEntendCountForScrollableLineGraph:)]) {
-            return [self.delegate xAxisLabelEntendCountForScrollableLineGraph:self];
+         @selector(xAxisLabelExtendCountForScrollableLineGraph:)]) {
+            return [self.delegate xAxisLabelExtendCountForScrollableLineGraph:self];
         }
     else return DEFAULT_GRAPH_X_LABEL_EXTEND_COUNT;
+}
+
+- (NSUInteger)graphXAxisLabelInitialOffset
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:
+         @selector(xAxisLabelInitialOffsetForScrollableLineGraph:)])
+    {
+        return [self.delegate xAxisLabelInitialOffsetForScrollableLineGraph:self];
+    }
+    else return DEFAULT_GRAPH_X_LABEL_INITIAL_OFFSET;
 }
 
 - (NSUInteger)graphYAxisLabelCount
@@ -767,7 +780,8 @@
     NSUInteger perIndexJump = self.graphXAxisLabelGap + 1;
     NSUInteger extendCount = self.graphXAxisLabelExtendCount;
     NSUInteger dataRecordCount = [self.numberOfData integerValue];
-    for (NSUInteger idx = 0;
+    NSUInteger initialOffset = self.graphXAxisLabelInitialOffset;
+    for (NSUInteger idx = initialOffset;
          idx < dataRecordCount + extendCount * perIndexJump;
          idx += perIndexJump) {
 

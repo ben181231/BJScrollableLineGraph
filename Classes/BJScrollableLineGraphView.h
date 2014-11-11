@@ -39,7 +39,8 @@
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)xAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (NSUInteger)xAxisLabelGapForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
-- (NSUInteger)xAxisLabelEntendCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)xAxisLabelExtendCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
+- (NSUInteger)xAxisLabelInitialOffsetForScrollableLineGraph:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referencePopUpColorForScrollable:(BJScrollableLineGraphView *)graph;
 - (BOOL)referencePopUpDragableForScrollable:(BJScrollableLineGraphView *)graph;
