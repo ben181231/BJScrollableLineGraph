@@ -470,7 +470,7 @@
     }
 
     if (![self isReferencePopUpFollowing]) {
-        padding = MAX(padding, 78.0f);
+        padding = MAX(padding, 40.0f);
     }
 
     return padding;

@@ -237,7 +237,7 @@
 
 - (BOOL)referencePopUpFollowingForScrollableGraph:(BJScrollableLineGraphView *)graph
 {
-    return YES;
+    return NO;
 }
 
 @end
