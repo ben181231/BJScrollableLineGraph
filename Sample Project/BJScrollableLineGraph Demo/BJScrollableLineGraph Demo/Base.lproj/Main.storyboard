@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <deployment defaultVersion="1808" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -18,8 +18,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F5y-um-OvB" userLabel="Background View">
+                                <rect key="frame" x="10" y="150" width="580" height="300"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Rn-YX-h77" customClass="BJScrollableLineGraphView">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
+                                <rect key="frame" x="10" y="150" width="580" height="300"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="UbP-79-Gix"/>
@@ -41,14 +45,18 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="4Rn-YX-h77" secondAttribute="trailing" id="2Yy-a8-vCw"/>
-                            <constraint firstItem="4Rn-YX-h77" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="IbK-LR-ckY"/>
+                            <constraint firstItem="F5y-um-OvB" firstAttribute="top" secondItem="4Rn-YX-h77" secondAttribute="top" id="1oM-Nn-4gn"/>
+                            <constraint firstAttribute="trailing" secondItem="4Rn-YX-h77" secondAttribute="trailing" constant="10" id="2Yy-a8-vCw"/>
+                            <constraint firstItem="4Rn-YX-h77" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="10" id="IbK-LR-ckY"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="jTR-JS-BKr" secondAttribute="bottom" constant="20" id="PpV-IA-Xgm"/>
-                            <constraint firstItem="4Rn-YX-h77" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="Uqw-va-7Dx"/>
+                            <constraint firstItem="F5y-um-OvB" firstAttribute="trailing" secondItem="4Rn-YX-h77" secondAttribute="trailing" id="Skq-q2-6lh"/>
+                            <constraint firstItem="F5y-um-OvB" firstAttribute="leading" secondItem="4Rn-YX-h77" secondAttribute="leading" id="X4m-sL-mgi"/>
                             <constraint firstAttribute="centerX" secondItem="jTR-JS-BKr" secondAttribute="centerX" id="dn6-5J-PhV"/>
+                            <constraint firstItem="F5y-um-OvB" firstAttribute="bottom" secondItem="4Rn-YX-h77" secondAttribute="bottom" id="mjM-cI-lbL"/>
                             <constraint firstItem="4Rn-YX-h77" firstAttribute="height" secondItem="kh9-bI-dsS" secondAttribute="height" multiplier="0.5" id="nmk-4Z-ZyH"/>
+                            <constraint firstAttribute="centerY" secondItem="4Rn-YX-h77" secondAttribute="centerY" id="zzg-aT-0on"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>

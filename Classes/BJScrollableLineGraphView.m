@@ -29,6 +29,7 @@
 
 #define DEFAULT_GRAPH_REFERENCE_LINE_COLOR [UIColor blackColor]
 #define DEFAULT_GRAPH_REFERENCE_POPUP_COLOR [UIColor whiteColor]
+#define DEFAULT_GRAPH_REFERENCE_POPUP_FOLLOWING (YES)
 
 #define GRAPH_SCROLL_TO_END_TOLERANCE (0.2f)
 
@@ -68,6 +69,7 @@
 @property (nonatomic, readonly) NSUInteger graphYAxisLabelCount;
 @property (nonatomic, readonly) UIColor *referenceLineColor;
 @property (nonatomic, readonly) UIColor *referencePopUpColor;
+@property (nonatomic, readonly, getter=isReferencePopUpFollowing) BOOL referencePopUpFollowing;
 
 @property (nonatomic, assign) NSUInteger referencingIndex;
 
@@ -281,6 +283,7 @@
     _graphBackgroundColor = graphBackgroundColor;
     if(self.graphView){
         [self.scrollView setBackgroundColor:graphBackgroundColor];
+        [self.yAxisView setBackgroundColor:graphBackgroundColor];
         [self.graphView setColorTop:graphBackgroundColor];
         [self.graphView setColorBottom:graphBackgroundColor];
     }
@@ -460,11 +463,17 @@
 
 - (CGFloat)graphTopPadding
 {
+    CGFloat padding = DEFAULT_GRAPH_VERTICAL_PADDING;
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(topPaddingForScrollableLineGraph:)]){
-        return [self.delegate topPaddingForScrollableLineGraph:self];
+        padding = [self.delegate topPaddingForScrollableLineGraph:self];
     }
-    else return DEFAULT_GRAPH_VERTICAL_PADDING;
+
+    if (![self isReferencePopUpFollowing]) {
+        padding = MAX(padding, 78.0f);
+    }
+
+    return padding;
 }
 
 - (CGFloat)graphBottomPadding
@@ -533,6 +542,14 @@
     else return DEFAULT_GRAPH_REFERENCE_POPUP_COLOR;
 }
 
+- (BOOL)isReferencePopUpFollowing
+{
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(referencePopUpFollowingForScrollable:)]) {
+        return [self.delegate referencePopUpFollowingForScrollable:self];
+    }
+    else return DEFAULT_GRAPH_REFERENCE_POPUP_FOLLOWING;
+}
 
 - (CGFloat)bottomOffsetOnGraphForValue:(CGFloat)value
 {
@@ -993,28 +1010,8 @@
     CGFloat topOffset = self.scrollView.frame.size.height - [self bottomOffsetForValue:value];
     CGFloat leftOffset = self.graphWidthPerDataRecord * index + yAxisWidth + hPadding;
 
-    // Horizontal Reference Line
-    CGMutablePathRef horizontalPath = CGPathCreateMutable();
-    CGPathMoveToPoint(horizontalPath, NULL, leftOffset, topOffset);
-    CGPathAddLineToPoint(horizontalPath, NULL, 0, topOffset);
-    [_horizontalReferenceLayer setPath:horizontalPath];
-    CGPathRelease(horizontalPath);
-    [self.scrollView.layer insertSublayer:_horizontalReferenceLayer atIndex:0];
+    BOOL referencePopUpFollowing = [self isReferencePopUpFollowing];
 
-    // Vertical Reference Line
-    CGMutablePathRef verticalPath = CGPathCreateMutable();
-    CGPathMoveToPoint(verticalPath, NULL, leftOffset, topOffset);
-    CGPathAddLineToPoint(verticalPath, NULL, leftOffset,
-                         self.scrollView.frame.size.height - self.graphXAxisHeight);
-    [_verticalReferenceLayer setPath:verticalPath];
-    CGPathRelease(verticalPath);
-    [self.scrollView.layer insertSublayer:_verticalReferenceLayer atIndex:0];
-
-    // Reference Circle View
-    [self.referenceCircleView setCenter:CGPointMake(leftOffset, topOffset)];
-    [self.referenceCircleView setAlpha:1.0f];
-
-    // Reference Pop Up View
     CGRect currentFrame = self.referencePopUpView.frame;
     CGFloat frameWidth = 0.0f;
     CGFloat frameHeight = 0.0f;
@@ -1030,21 +1027,48 @@
         paragraphStyle.alignment = NSTextAlignmentCenter;
 
         popUpString =
-            [[NSAttributedString alloc]
-                initWithString:[NSString stringWithFormat:@"%.0f", value]
-                    attributes:@{
-                         NSParagraphStyleAttributeName: paragraphStyle,
-                                   NSFontAttributeName: [UIFont systemFontOfSize:13.0f]
-                         }];
+        [[NSAttributedString alloc]
+         initWithString:[NSString stringWithFormat:@"%.0f", value]
+         attributes:@{
+                      NSParagraphStyleAttributeName: paragraphStyle,
+                      NSFontAttributeName: [UIFont systemFontOfSize:13.0f]
+                      }];
     }
 
     frameWidth = currentFrame.size.width = MAX(85.0f, popUpString.size.width + 24.0f);
     frameHeight = currentFrame.size.height = MAX(46.0f, popUpString.size.height + 15.0f);
 
+    // Horizontal Reference Line
+    CGMutablePathRef horizontalPath = CGPathCreateMutable();
+    CGPathMoveToPoint(horizontalPath, NULL, leftOffset, topOffset);
+    CGPathAddLineToPoint(horizontalPath, NULL, 0, topOffset);
+    [_horizontalReferenceLayer setPath:horizontalPath];
+    CGPathRelease(horizontalPath);
+    [self.scrollView.layer insertSublayer:_horizontalReferenceLayer atIndex:0];
+
+    // Vertical Reference Line
+    CGMutablePathRef verticalPath = CGPathCreateMutable();
+    if (referencePopUpFollowing) {
+        CGPathMoveToPoint(verticalPath, NULL, leftOffset, topOffset);
+    }
+    else{
+        CGPathMoveToPoint(verticalPath, NULL, leftOffset,
+                          frameHeight + popUpOffset + popUpTriangleHeight);
+    }
+    CGPathAddLineToPoint(verticalPath, NULL, leftOffset,
+                         self.scrollView.frame.size.height - self.graphXAxisHeight);
+    [_verticalReferenceLayer setPath:verticalPath];
+    CGPathRelease(verticalPath);
+    [self.scrollView.layer insertSublayer:_verticalReferenceLayer atIndex:0];
+
+    // Reference Circle View
+    [self.referenceCircleView setCenter:CGPointMake(leftOffset, topOffset)];
+    [self.referenceCircleView setAlpha:1.0f];
+
+    // Reference Pop Up View
     [self.referencePopUpView setNumberOfLines:
         ([[popUpString.string
-           componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]
-          count])];
+           componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] count])];
     [self.referencePopUpView setFrame:currentFrame];
     [self.referencePopUpView setAttributedText:popUpString];
     [self.referencePopUpView setAlpha:1.0f];
@@ -1063,25 +1087,45 @@
     }
 
     if (topOffset > frameHeight + popUpTriangleHeight + popUpOffset * 2) {
-        [self.referencePopUpView setCenter:
-             CGPointMake(leftOffset + popUpViewLeftOffset,
-                         topOffset - frameHeight / 2.0f - popUpOffset)];
+        if (referencePopUpFollowing) {
+            [self.referencePopUpView setCenter:
+                 CGPointMake(leftOffset + popUpViewLeftOffset,
+                             topOffset - frameHeight / 2.0f - popUpOffset)];
 
-        CGPathMoveToPoint(popUpTrianglePath,
-                          NULL,
-                          leftOffset - popUpTriangleWidth / 2.0f,
-                          topOffset - popUpOffset);
-        CGPathAddLineToPoint(popUpTrianglePath,
-                             NULL,
-                             leftOffset + popUpTriangleWidth / 2.0f,
-                             topOffset - popUpOffset);
-        CGPathAddLineToPoint(popUpTrianglePath,
-                             NULL,
-                             leftOffset,
-                             topOffset - popUpOffset + popUpTriangleHeight);
+            CGPathMoveToPoint(popUpTrianglePath,
+                              NULL,
+                              leftOffset - popUpTriangleWidth / 2.0f,
+                              topOffset - popUpOffset);
+            CGPathAddLineToPoint(popUpTrianglePath,
+                                 NULL,
+                                 leftOffset + popUpTriangleWidth / 2.0f,
+                                 topOffset - popUpOffset);
+            CGPathAddLineToPoint(popUpTrianglePath,
+                                 NULL,
+                                 leftOffset,
+                                 topOffset - popUpOffset + popUpTriangleHeight);
+        }
+        else{
+            [self.referencePopUpView setCenter:
+                 CGPointMake(leftOffset + popUpViewLeftOffset,
+                             frameHeight / 2.0f + popUpOffset)];
 
+            CGPathMoveToPoint(popUpTrianglePath,
+                              NULL,
+                              leftOffset - popUpTriangleWidth / 2.0f,
+                              frameHeight + popUpOffset);
+            CGPathAddLineToPoint(popUpTrianglePath,
+                                 NULL,
+                                 leftOffset + popUpTriangleWidth / 2.0f,
+                                 frameHeight + popUpOffset);
+            CGPathAddLineToPoint(popUpTrianglePath,
+                                 NULL,
+                                 leftOffset,
+                                 frameHeight + popUpOffset + popUpTriangleHeight);
+        }
     }
     else{
+        // Not enough space for drawing pop-up view, draw it at the bottom
         [self.referencePopUpView setCenter:
              CGPointMake(leftOffset + popUpViewLeftOffset,
                          topOffset + frameHeight / 2.0f + popUpOffset)];
@@ -1098,6 +1142,19 @@
                              NULL,
                              leftOffset,
                              topOffset + popUpOffset - popUpTriangleHeight);
+
+        if (!referencePopUpFollowing) {
+            // redraw the vertical reference line
+            [_verticalReferenceLayer removeFromSuperlayer];
+
+            CGMutablePathRef verticalPath = CGPathCreateMutable();
+            CGPathMoveToPoint(verticalPath, NULL, leftOffset, topOffset);
+            CGPathAddLineToPoint(verticalPath, NULL, leftOffset,
+                                 self.scrollView.frame.size.height - self.graphXAxisHeight);
+            [_verticalReferenceLayer setPath:verticalPath];
+            CGPathRelease(verticalPath);
+            [self.scrollView.layer insertSublayer:_verticalReferenceLayer atIndex:0];
+        }
     }
 
    CGPathCloseSubpath(popUpTrianglePath);

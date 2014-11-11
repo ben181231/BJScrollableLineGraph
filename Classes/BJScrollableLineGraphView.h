@@ -44,6 +44,7 @@
 - (UIColor *)referenceLineColorForScrollable:(BJScrollableLineGraphView *)graph;
 - (UIColor *)referencePopUpColorForScrollable:(BJScrollableLineGraphView *)graph;
 - (BOOL)referencePopUpDragableForScrollable:(BJScrollableLineGraphView *)graph;
+- (BOOL)referencePopUpFollowingForScrollable:(BJScrollableLineGraphView *)graph;
 
 - (void)scrollableLineGraphDidFinishLoading:(BJScrollableLineGraphView *)graph;
 - (void)scrollableLineGraph:(BJScrollableLineGraphView *)graph didTapOnIndex:(NSUInteger)index;
