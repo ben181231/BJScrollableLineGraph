@@ -55,6 +55,7 @@
 @property (strong, nonatomic) UIColor *graphBackgroundColor;
 @property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, assign) CGFloat graphWidthPerDataRecord;
+@property (nonatomic, readonly, getter=isScrolledToEnd) BOOL scrolledToEnd;
 
 @property (nonatomic, assign) IBOutlet id <BJScrollableLineGraphViewDataSource> dataSource;
 @property (nonatomic, assign) IBOutlet id <BJScrollableLineGraphViewDelegate> delegate;

@@ -29,6 +29,8 @@
 #define DEFAULT_GRAPH_REFERENCE_LINE_COLOR [UIColor blackColor]
 #define DEFAULT_GRAPH_REFERENCE_POPUP_COLOR [UIColor whiteColor]
 
+#define GRAPH_SCROLL_TO_END_TOLERANCE (0.2f)
+
 @interface BJScrollableLineGraphView()
     <BEMSimpleLineGraphDataSource, BEMSimpleLineGraphDelegate,
     UIGestureRecognizerDelegate>
@@ -324,6 +326,21 @@
     }
 
     return _graphWidthPerDataRecord;
+}
+
+- (BOOL)isScrolledToEnd
+{
+    UIScrollView *scrollView = self.scrollView;
+    if(scrollView){
+        CGFloat contentWidth = scrollView.contentSize.width;
+        CGFloat contentOffsetLeft = scrollView.contentOffset.x;
+        CGFloat viewWidth = scrollView.frame.size.width;
+
+        return contentWidth - contentOffsetLeft < viewWidth * (1 + GRAPH_SCROLL_TO_END_TOLERANCE);
+    }
+    else{
+        return NO;
+    }
 }
 
 - (void)updateGraphWidth
