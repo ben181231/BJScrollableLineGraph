@@ -46,6 +46,7 @@
 @property (strong, nonatomic) BEMSimpleLineGraphView *graphView;
 @property (strong, nonatomic) UIView *xAxisView;
 @property (strong, nonatomic) UIView *yAxisView;
+@property (strong, nonatomic) UIView *yAxisBackgroundView;
 @property (strong, nonatomic) UIView *referenceCircleView;
 @property (strong, nonatomic) UILabel *referencePopUpView;
 
@@ -105,8 +106,19 @@
     // -- Setup Referencing Views
     [self setupReferenceViews];
 
+    // -- Setup Y Axis Background View
+    [self setYAxisBackgroundView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)]];
+    [self.yAxisBackgroundView setBackgroundColor:self.graphBackgroundColor];
+    if(self.delegate &&
+       [self.delegate respondsToSelector:@selector(yAxisColorForScrollableLineGraph:)])
+    {
+        [self.yAxisBackgroundView setBackgroundColor:
+            [self.delegate yAxisColorForScrollableLineGraph:self]];
+    }
+
     // -- Add subviews --
     [self addSubview:self.scrollView];
+    [self addSubview:self.yAxisBackgroundView];
     [self addSubview:self.yAxisView];
     [self.scrollView addSubview:self.xAxisView];
     [self.scrollView addSubview:self.graphView];
@@ -116,6 +128,7 @@
     // -- Add layout constraints --
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.graphView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.yAxisBackgroundView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.yAxisView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.xAxisView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self addConstraints:@[
@@ -170,6 +183,35 @@
                                     multiplier:1.0f
                                       constant:0.0f],
         [NSLayoutConstraint constraintWithItem:self.yAxisView
+                                     attribute:NSLayoutAttributeWidth
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1.0f
+                                      constant:self.graphYAxisWidth],
+
+        [NSLayoutConstraint constraintWithItem:self.yAxisBackgroundView
+                                     attribute:NSLayoutAttributeTop
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self
+                                     attribute:NSLayoutAttributeTop
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:self.yAxisBackgroundView
+                                     attribute:NSLayoutAttributeBottom
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self
+                                     attribute:NSLayoutAttributeBottom
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:self.yAxisBackgroundView
+                                     attribute:NSLayoutAttributeLeading
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:self
+                                     attribute:NSLayoutAttributeLeading
+                                    multiplier:1.0f
+                                      constant:0.0f],
+        [NSLayoutConstraint constraintWithItem:self.yAxisBackgroundView
                                      attribute:NSLayoutAttributeWidth
                                      relatedBy:NSLayoutRelationEqual
                                         toItem:nil
@@ -283,9 +325,7 @@
     _graphBackgroundColor = graphBackgroundColor;
     if(self.graphView){
         [self.scrollView setBackgroundColor:graphBackgroundColor];
-        [self.yAxisView setBackgroundColor:graphBackgroundColor];
-        [self.graphView setColorTop:graphBackgroundColor];
-        [self.graphView setColorBottom:graphBackgroundColor];
+        [self.yAxisBackgroundView setBackgroundColor:graphBackgroundColor];
     }
 
     [self reloadGraph];
@@ -619,12 +659,7 @@
         }
     }
 
-    [yAxisView setBackgroundColor:self.graphBackgroundColor];
-    if(self.delegate &&
-       [self.delegate respondsToSelector:@selector(yAxisColorForScrollableLineGraph:)])
-    {
-        [yAxisView setBackgroundColor:[self.delegate yAxisColorForScrollableLineGraph:self]];
-    }
+    [yAxisView setBackgroundColor:[UIColor clearColor]];
 
     UIColor *indicatorColor = [UIColor blackColor];
     if(self.delegate &&

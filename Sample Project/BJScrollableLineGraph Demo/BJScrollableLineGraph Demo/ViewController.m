@@ -16,7 +16,7 @@
 
 #define GRAPH_WIDTH_PER_DATA (30.0f)
 
-#define GRAPH_COLOR [UIColor colorWithRed:31.0/255.0 green:187.0/255.0 blue:166.0/255.0 alpha:1.0]
+#define GRAPH_COLOR [UIColor colorWithRed:0.0f green:161.0f/255 blue:229.0f/255 alpha:1.0f]
 
 @interface ViewController ()
 
@@ -34,11 +34,8 @@
     [super viewDidLoad];
 
     [self.scrollableLineGraph setGraphWidthPerDataRecord:10.0f];
-    [self.scrollableLineGraph setGraphBackgroundColor:[UIColor clearColor]];
-    [self.scrollableLineGraph setGraphColor:[UIColor colorWithRed:0.0f
-                                                            green:161.0f/255
-                                                             blue:229.0f/255
-                                                            alpha:1.0f]];
+    [self.scrollableLineGraph setGraphBackgroundColor:[UIColor lightGrayColor]];
+    [self.scrollableLineGraph setGraphColor:GRAPH_COLOR];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -193,11 +190,6 @@
 - (NSUInteger)yAxisLabelCountForScrollableLineGraph:(BJScrollableLineGraphView *)graph
 {
     return 5;
-}
-
-- (UIColor *)yAxisColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
-{
-    return [UIColor lightGrayColor];
 }
 
 - (UIColor *)yAxisIndicatorColorForScrollableLineGraph:(BJScrollableLineGraphView *)graph
